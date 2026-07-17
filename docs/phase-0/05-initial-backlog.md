@@ -14,10 +14,12 @@
 | P0-008 | P0 | อนุมัติ architecture direction | Decisions DEC-002–005 ปิดครบ | Tech Lead | Open |
 | P0-009 | P0 | Wireframe review | Core workflow มี feedback และ approval | PO/QA Lead | Open |
 | P0-010 | P0 | Phase 0 exit review | Exit checklist ผ่านและลงชื่อ | Sponsor/PO | Open |
+| P0-011 | P0 | Review workflow/traceability | Status และ linkage rules ผ่านการยืนยัน | QA Lead | Ready for review |
+| P0-012 | P0 | Review role-permission matrix | Role boundaries และ sensitive actions ผ่าน Security review | Security | Ready for review |
+| P0-013 | P0 | Review KPI catalog | สูตรและ data source ใช้งานได้จริง | PO/QA Lead | Ready for review |
 | FND-001 | P1 | Scaffold frontend/backend | Build และ test ได้ในเครื่อง/CI | Tech Lead | Ready after gate |
 | FND-002 | P1 | Database migration baseline | สร้าง/rollback schema ใน clean database ได้ | Backend | Ready after gate |
 | FND-003 | P1 | Authentication/RBAC | Integration tests ครอบคลุม allow/deny | Backend | Ready after gate |
 | FND-004 | P1 | Product/Module/Environment | Admin จัดการ master data พร้อม audit ได้ | Team | Ready after gate |
 | FND-005 | P1 | Audit/error handling | Sensitive actions audited; errors use standard envelope | Team | Ready after gate |
 | FND-006 | P1 | CI/CD environments | Build/test/deploy DEV และ promote UAT ได้ | DevOps | Ready after gate |
-
