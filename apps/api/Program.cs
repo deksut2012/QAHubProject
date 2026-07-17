@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Infrastructure.Security;
 using QAHub.Api.Features.Products;
 using QAHub.Api.Features.Requirements;
+using QAHub.Api.Features.TestDesign;
 using QAHub.Api.Features.Administration;
 using QAHub.Api.Features.Auditing;
 using QAHub.Api.Infrastructure.Data;
@@ -94,6 +95,7 @@ app.MapProductEndpoints();
 app.MapProductModuleEndpoints();
 app.MapProductEnvironmentEndpoints();
 app.MapRequirementEndpoints();
+app.MapTestCaseEndpoints();
 app.MapAdministrationEndpoints();
 app.MapAuditEndpoints();
 
