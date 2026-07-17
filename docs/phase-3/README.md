@@ -12,6 +12,7 @@
 - Approved/Active version immutable และสร้าง Draft version ใหม่จาก snapshot เดิมได้
 - Filter ตาม Product, Requirement, Status และข้อความค้นหา
 - หน้า list/create/detail/editor ตาม UI Prototype
+- Clone Test Case พร้อมคัดลอกเนื้อหาและ steps ไปยัง Test Case ใหม่
 
 ## งานถัดไป
 

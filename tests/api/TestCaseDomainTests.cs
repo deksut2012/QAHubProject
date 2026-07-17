@@ -5,5 +5,6 @@ public sealed class TestCaseDomainTests
  [Fact]public void ReviewWorkflowApprovesDraft(){var x=Version();x.TransitionTo(TestCaseStatus.InReview);x.TransitionTo(TestCaseStatus.Approved);Assert.Equal(TestCaseStatus.Approved,x.Status);}
  [Fact]public void ApprovedVersionIsImmutable(){var x=Version();x.TransitionTo(TestCaseStatus.InReview);x.TransitionTo(TestCaseStatus.Approved);Assert.Throws<InvalidOperationException>(()=>x.Update("Changed","Scenario","",""));}
  [Fact]public void InvalidTransitionIsRejected(){Assert.Throws<InvalidOperationException>(()=>Version().TransitionTo(TestCaseStatus.Active));}
- private static TestCaseVersion Version()=>new(Guid.NewGuid(),1,"Title","Scenario","","smoke");
+ [Fact]public void CloneWithVersionCopiesContentIntoNewTestCase(){var source=new TestCase(Guid.NewGuid(),null,null,"TC-001");var version=Version();version.Steps.Add(new TestCaseStep(version.Id,1,"Open app","Input","Result"));var clone=source.CloneWithVersion(version,"TC-002");Assert.Equal("TC-002",clone.Code);Assert.Single(clone.Versions);Assert.Equal("Original title",clone.Versions[0].Title);Assert.Single(clone.Versions[0].Steps);Assert.Equal("Open app",clone.Versions[0].Steps[0].Action);}
+ private static TestCaseVersion Version()=>new(Guid.NewGuid(),1,"Original title","Scenario","","smoke");
 }
