@@ -7,6 +7,7 @@ public sealed class QAHubDbContext(DbContextOptions<QAHubDbContext> options) : D
 {
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductModule> ProductModules => Set<ProductModule>();
+    public DbSet<ProductEnvironment> ProductEnvironments => Set<ProductEnvironment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +27,17 @@ public sealed class QAHubDbContext(DbContextOptions<QAHubDbContext> options) : D
         module.HasIndex(x => new { x.ProductId, x.Code }).IsUnique();
         module.HasOne(x => x.Product)
             .WithMany(x => x.Modules)
+            .HasForeignKey(x => x.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        var environment = modelBuilder.Entity<ProductEnvironment>();
+        environment.ToTable("ProductEnvironments");
+        environment.HasKey(x => x.Id);
+        environment.Property(x => x.Code).HasMaxLength(32).IsRequired();
+        environment.Property(x => x.Name).HasMaxLength(200).IsRequired();
+        environment.HasIndex(x => new { x.ProductId, x.Code }).IsUnique();
+        environment.HasOne(x => x.Product)
+            .WithMany(x => x.Environments)
             .HasForeignKey(x => x.ProductId)
             .OnDelete(DeleteBehavior.Restrict);
     }

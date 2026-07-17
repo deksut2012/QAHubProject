@@ -48,5 +48,6 @@ app.MapGet("/api/v1/system/info", () => Results.Ok(new
 
 app.MapProductEndpoints();
 app.MapProductModuleEndpoints();
+app.MapProductEnvironmentEndpoints();
 
 app.Run();

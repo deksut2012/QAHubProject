@@ -39,3 +39,17 @@ Content-Type: application/json
   "code": "STK",
   "name": "Stock"
 }
+
+###
+
+GET {{host}}/api/v1/products/{{productId}}/environments
+
+###
+
+POST {{host}}/api/v1/products/{{productId}}/environments
+Content-Type: application/json
+
+{
+  "code": "UAT",
+  "name": "User Acceptance Test"
+}
