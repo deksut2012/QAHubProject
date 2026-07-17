@@ -1,6 +1,24 @@
-@QAHub.Api_HostAddress = http://localhost:5120
+@host = http://localhost:5120
 
-GET {{QAHub.Api_HostAddress}}/weatherforecast/
+GET {{host}}/health
+
+###
+
+GET {{host}}/api/v1/system/info
+Accept: application/json
+X-Correlation-ID: local-api-test
+
+###
+
+GET {{host}}/api/v1/products?page=1&pageSize=25&isActive=true
 Accept: application/json
 
 ###
+
+POST {{host}}/api/v1/products
+Content-Type: application/json
+
+{
+  "code": "PMX",
+  "name": "ProMaxx"
+}

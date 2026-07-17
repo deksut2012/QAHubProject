@@ -6,6 +6,9 @@ public sealed class Product
 
     public Product(string code, string name)
     {
+        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+
         Id = Guid.NewGuid();
         Code = code.Trim().ToUpperInvariant();
         Name = name.Trim();
@@ -21,4 +24,12 @@ public sealed class Product
     public DateTimeOffset? UpdatedAtUtc { get; private set; }
     public byte[] RowVersion { get; private set; } = [];
     public ICollection<ProductModule> Modules { get; private set; } = [];
+
+    public void Update(string name, bool isActive)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(name);
+        Name = name.Trim();
+        IsActive = isActive;
+        UpdatedAtUtc = DateTimeOffset.UtcNow;
+    }
 }
