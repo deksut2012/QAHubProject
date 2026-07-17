@@ -22,3 +22,20 @@ Content-Type: application/json
   "code": "PMX",
   "name": "ProMaxx"
 }
+
+###
+
+@productId = 00000000-0000-0000-0000-000000000000
+
+GET {{host}}/api/v1/products/{{productId}}/modules?isActive=true
+Accept: application/json
+
+###
+
+POST {{host}}/api/v1/products/{{productId}}/modules
+Content-Type: application/json
+
+{
+  "code": "STK",
+  "name": "Stock"
+}

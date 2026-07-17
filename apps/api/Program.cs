@@ -47,5 +47,6 @@ app.MapGet("/api/v1/system/info", () => Results.Ok(new
     .WithName("GetSystemInfo");
 
 app.MapProductEndpoints();
+app.MapProductModuleEndpoints();
 
 app.Run();

@@ -65,3 +65,4 @@ Endpoints:
 - API health: `http://localhost:5000/health` (พอร์ตจริงดูจาก output ของ `dotnet run`)
 - API system info: `/api/v1/system/info`
 - Products: `GET/POST /api/v1/products`, `GET/PUT /api/v1/products/{id}`
+- Product modules: `GET/POST /api/v1/products/{productId}/modules`, `GET/PUT /api/v1/products/{productId}/modules/{id}`
