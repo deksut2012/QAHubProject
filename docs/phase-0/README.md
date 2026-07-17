@@ -19,6 +19,7 @@
 | [11-domain-model.md](11-domain-model.md) | Conceptual entities, ownership และ traceability | Ready for review |
 | [12-api-audit-contract.md](12-api-audit-contract.md) | API conventions, errors, concurrency และ audit events | Ready for review |
 | [13-phase-1-readiness.md](13-phase-1-readiness.md) | Entry criteria และ execution plan สำหรับ Foundation | Draft |
+| [14-environment-assessment.md](14-environment-assessment.md) | Toolchain readiness และ prerequisite gaps | Assessed |
 | [Architecture Decisions](../architecture/README.md) | ADR สำหรับ stack และโครงสร้างระบบ | Proposed |
 
 ## Definition of Done

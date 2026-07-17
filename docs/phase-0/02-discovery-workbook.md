@@ -64,9 +64,8 @@
 
 | ID | Decision | Options | Owner | Due | Status |
 |---|---|---|---|---|---|
-| DEC-001 | Pilot Product | ProMaxx / MyMaxx2 | PO + QA Lead | Exit Gate | Pending |
-| DEC-002 | Frontend | Next.js / React SPA | Tech Lead | Exit Gate | Pending |
-| DEC-003 | Database | SQL Server / PostgreSQL | Tech Lead | Exit Gate | Pending |
-| DEC-004 | Authentication | Enterprise SSO / local identity | Security + Tech Lead | Exit Gate | Pending |
-| DEC-005 | Hosting | On-prem / cloud / hybrid | Sponsor + DevOps | Exit Gate | Pending |
-
+| DEC-001 | Pilot Product | ProMaxx primary; MyMaxx2 secondary validation | PO + QA Lead | Exit Gate | Accepted as baseline; team readiness pending |
+| DEC-002 | Frontend | Next.js + TypeScript | Tech Lead | Exit Gate | Accepted |
+| DEC-003 | Database | SQL Server + EF Core migrations | Tech Lead | Exit Gate | Accepted; edition/hosting pending |
+| DEC-004 | Authentication | OIDC + server-side RBAC | Security + Tech Lead | Exit Gate | Accepted; provider pending |
+| DEC-005 | Hosting | Container-ready application | Sponsor + DevOps | Exit Gate | Partial; target platform pending |

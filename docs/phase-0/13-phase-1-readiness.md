@@ -5,7 +5,7 @@
 ## Entry Criteria
 
 - Phase 0 Exit Gate เป็น GO หรือ Conditional GO ที่ไม่มี architecture blocker
-- DEC-001 ถึง DEC-005 ปิดครบ
+- DEC-001 ถึง DEC-004 accepted และ DEC-005 มี DEV target ที่ยืนยันแล้ว
 - มีชื่อ Tech Lead, repository owner และ environment owner
 - ยืนยัน supported browser, hosting, SSO และ database
 - มี DEV environment/network access ที่จำเป็น
@@ -68,7 +68,7 @@
 
 ## Deferred Until Decision
 
-- สร้าง source scaffold: รอ DEC-002/003/004/005
+- สร้าง source scaffold: architecture decisions พร้อม แต่ต้องติดตั้ง .NET 10 SDK
 - สร้าง deployment pipeline: รอ CI/CD และ hosting platform
-- เลือก database-specific concurrency/index strategy: รอ database engine
+- เลือก database-specific concurrency/index strategy: ใช้ SQL Server baseline; รอ edition/collation/hosting
 - ตั้งค่า SSO metadata/secret: รอ Identity Provider และ security owner

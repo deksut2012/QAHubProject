@@ -4,7 +4,7 @@
 
 เสนอให้ใช้ **ProMaxx เป็น Primary Pilot** และใช้ **MyMaxx2 เป็น Secondary Validation** หลัง core workflow เสถียร
 
-สถานะ: **Proposed — ต้องได้รับการยืนยันจาก PO และ QA Lead**
+สถานะ: **Accepted as working baseline — ต้องยืนยันทีมและข้อมูลพร้อมก่อนเริ่ม Pilot**
 
 ## Rationale
 
@@ -49,4 +49,3 @@ MyMaxx2 เหมาะเป็น validation ลำดับถัดไปเ
 - วันที่เริ่ม/สิ้นสุด
 - Sample data owner
 - Success threshold และ go/no-go authority
-

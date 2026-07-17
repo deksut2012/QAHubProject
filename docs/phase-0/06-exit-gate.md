@@ -7,14 +7,22 @@
 - [ ] Sponsor, PO, QA Lead, Tech Lead และ Security owner ได้รับการแต่งตั้ง
 - [ ] Pain points และ current workflow ผ่านการยืนยันจากผู้ใช้งาน
 - [ ] Product/Module/Role/Template inventory ครบ
-- [ ] Pilot Product ได้รับการเลือก
+- [x] Pilot Product baseline: ProMaxx primary, MyMaxx2 secondary validation
 - [ ] MVP in-scope/out-of-scope ได้รับอนุมัติ
 - [ ] KPI มี baseline, target, formula, source และ owner
 - [ ] Integration และ security constraints ได้รับการยืนยัน
 - [ ] Initial backlog ผ่าน refinement และจัดลำดับ
-- [ ] Architecture direction และ decisions สำคัญได้รับอนุมัติ
+- [x] Architecture working baseline: Next.js, .NET 10, SQL Server, OIDC, modular monolith
 - [ ] Wireframe ของ core workflow ได้รับอนุมัติ
 - [ ] RAID log ไม่มี blocker ที่ไม่มี owner
+
+## Current Blockers
+
+- ยังไม่มีรายชื่อ Sponsor/PO/QA Lead/Tech Lead/Security owner
+- ยังไม่มี current-workflow evidence และ sanitized sample data
+- KPI ยังไม่มี baseline จากข้อมูลจริง
+- Identity Provider และ DEV hosting target ยังไม่ระบุ
+- เครื่องพัฒนายังไม่มี .NET 10 SDK และ Docker engine ยังไม่ทำงาน
 
 ## Approval Record
 
@@ -31,4 +39,3 @@
 - [ ] GO — เริ่ม Phase 1 ตาม approved baseline
 - [ ] CONDITIONAL GO — ระบุ condition, owner และ due date
 - [x] NO GO — Phase 0 ยังอยู่ระหว่าง Discovery
-

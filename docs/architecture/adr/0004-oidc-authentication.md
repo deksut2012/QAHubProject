@@ -1,8 +1,8 @@
 # ADR-0004: OIDC Authentication and Server-side RBAC
 
-- Status: Proposed
+- Status: Accepted (Identity Provider pending)
 - Date: 2026-07-17
-- Decision owner: Security + Tech Lead (TBD)
+- Decision authority: Project working baseline, 2026-07-17
 
 ## Context
 
@@ -22,4 +22,3 @@
 - ต้องมี IdP metadata, claim mapping และ non-production test tenant/client
 - Permission changes และ access denial สำคัญต้อง audit
 - ต้องออกแบบ emergency access และ service identity แยกจาก user account
-

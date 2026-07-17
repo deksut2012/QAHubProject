@@ -6,7 +6,7 @@
 
 - Frontend: Next.js + TypeScript
 - Backend: .NET 10 LTS Web API (แทน .NET 8 ในแผนเดิม เนื่องจาก .NET 8 สิ้นสุดการรองรับเดือนพฤศจิกายน 2026)
-- Database: เลือก SQL Server หรือ PostgreSQL หลังยืนยัน hosting/licensing/team skill
+- Database: SQL Server ผ่าน EF Core migrations; edition, licensing และ hosting endpoint รอยืนยัน
 - API style: REST, OpenAPI-first, versioned endpoints
 - Deployment: containerized application แยก DEV/UAT/PROD
 - Observability: structured log, correlation ID, health check, metrics และ audit แยกจาก diagnostic log

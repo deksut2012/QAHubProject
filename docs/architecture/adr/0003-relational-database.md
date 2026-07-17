@@ -1,27 +1,21 @@
 # ADR-0003: Relational Database
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-07-17
-- Decision owner: Tech Lead (TBD)
+- Decision authority: Project working baseline, 2026-07-17
 
 ## Context
 
-ระบบต้องการ referential integrity, versioning, transaction และ reporting ที่ชัดเจน แผนเดิมเสนอ SQL Server หรือ PostgreSQL แต่ข้อมูล licensing, hosting และ team capability ยังไม่ครบ
+ระบบต้องการ referential integrity, versioning, transaction และ reporting ที่ชัดเจน แผนเดิมเสนอ SQL Server หรือ PostgreSQL สภาพแวดล้อมปัจจุบันมี SQL Server tooling และ Product Pilot มี SQL Server อยู่ใน technology landscape
 
 ## Decision
 
-ใช้ relational database ผ่าน EF Core migrations ส่วน engine เป็น decision gate:
+ใช้ SQL Server ผ่าน EF Core migrations เป็น baseline ของ MVP โดยยังคง domain model ที่ไม่ผูก stored procedure/vendor feature โดยไม่มี ADR เพิ่มเติม
 
-- เลือก SQL Server หากองค์กรมี platform/operation/licensing มาตรฐานอยู่แล้ว
-- เลือก PostgreSQL หากต้องการลด licensing dependency และ platform รองรับ operational requirement
+## Constraints to Confirm
 
-ห้ามพัฒนา schema ที่พึ่ง engine-specific feature จนกว่า decision จะ Accepted
-
-## Acceptance Inputs
-
-- Hosting/platform support
+- SQL Server edition และ licensing
+- Hosting/platform endpoint
 - Backup, restore, HA และ RPO/RTO
-- Licensing/TCO
 - Team operation skill
 - Required collation/search/reporting behavior
-

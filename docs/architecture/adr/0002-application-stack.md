@@ -1,8 +1,8 @@
 # ADR-0002: Application Stack
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-07-17
-- Decision owner: Tech Lead (TBD)
+- Decision authority: Project working baseline, 2026-07-17
 
 ## Context
 
