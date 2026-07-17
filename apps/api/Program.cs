@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Infrastructure.Security;
 using QAHub.Api.Features.Products;
+using QAHub.Api.Features.Requirements;
 using QAHub.Api.Features.Administration;
 using QAHub.Api.Features.Auditing;
 using QAHub.Api.Infrastructure.Data;
@@ -92,6 +93,7 @@ app.MapGet("/api/v1/session", (System.Security.Claims.ClaimsPrincipal user) => R
 app.MapProductEndpoints();
 app.MapProductModuleEndpoints();
 app.MapProductEnvironmentEndpoints();
+app.MapRequirementEndpoints();
 app.MapAdministrationEndpoints();
 app.MapAuditEndpoints();
 

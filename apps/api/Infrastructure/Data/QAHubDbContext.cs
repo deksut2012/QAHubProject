@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using QAHub.Api.Domain.Auditing;
 using QAHub.Api.Domain.Identity;
 using QAHub.Api.Domain.Products;
+using QAHub.Api.Domain.Requirements;
 
 namespace QAHub.Api.Infrastructure.Data;
 
@@ -18,6 +19,7 @@ public sealed class QAHubDbContext(
     public DbSet<UserAccount> Users => Set<UserAccount>();
     public DbSet<AppRole> Roles => Set<AppRole>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<Requirement> Requirements => Set<Requirement>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -79,6 +81,20 @@ public sealed class QAHubDbContext(
         userRole.ToTable("UserRoles"); userRole.HasKey(x => new { x.UserId, x.RoleId });
         userRole.HasOne(x => x.User).WithMany(x => x.Roles).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         userRole.HasOne(x => x.Role).WithMany(x => x.Users).HasForeignKey(x => x.RoleId).OnDelete(DeleteBehavior.Restrict);
+
+        var requirement = modelBuilder.Entity<Requirement>();
+        requirement.ToTable("Requirements"); requirement.HasKey(x => x.Id);
+        requirement.Property(x => x.JobNumber).HasMaxLength(50).IsRequired();
+        requirement.Property(x => x.Title).HasMaxLength(250).IsRequired();
+        requirement.Property(x => x.Description).HasColumnType("nvarchar(max)").IsRequired();
+        requirement.Property(x => x.AcceptanceCriteria).HasColumnType("nvarchar(max)").IsRequired();
+        requirement.Property(x => x.Assignee).HasMaxLength(200);
+        requirement.Property(x => x.Status).HasConversion<string>().HasMaxLength(30).IsRequired();
+        requirement.Property(x => x.RowVersion).IsRowVersion();
+        requirement.HasIndex(x => new { x.ProductId, x.JobNumber }).IsUnique();
+        requirement.HasIndex(x => new { x.ProductId, x.Status, x.UpdatedAtUtc });
+        requirement.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
+        requirement.HasOne<ProductModule>().WithMany().HasForeignKey(x => x.ModuleId).OnDelete(DeleteBehavior.Restrict);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -93,7 +109,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole;
+        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
@@ -108,6 +124,7 @@ public sealed class QAHubDbContext(
             Product product => product.Id,
             ProductModule module => module.ProductId,
             ProductEnvironment environment => environment.ProductId,
+            Requirement requirement => requirement.ProductId,
             _ => (Guid?)null,
         };
         var changes = entry.Properties
