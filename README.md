@@ -35,6 +35,19 @@ dotnet run --project apps/api/QAHub.Api.csproj
 npm.cmd --prefix apps/web run dev
 ```
 
+Local SQL Server:
+
+```powershell
+Copy-Item .env.example .env
+# แก้ placeholder ทั้งสองตำแหน่งใน .env ให้เป็นรหัสผ่าน local ที่รัดกุมและตรงกัน
+docker compose up -d sqlserver
+
+$env:ConnectionStrings__QAHub = (Get-Content .env | Where-Object { $_ -like 'ConnectionStrings__QAHub=*' }).Substring(25)
+dotnet ef database update --project apps/api/QAHub.Api.csproj --startup-project apps/api/QAHub.Api.csproj
+```
+
+ไฟล์ `.env` ถูก Git ignore และห้าม commit เด็ดขาด
+
 Quality gates:
 
 ```powershell

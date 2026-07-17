@@ -1,0 +1,16 @@
+root = true
+
+[*.cs]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+dotnet_analyzer_diagnostic.severity = warning
+
+[**/Migrations/*.cs]
+# EF Core migrations are generated code and may use literal arrays in fluent calls.
+dotnet_diagnostic.CA1861.severity = none
+
+[*.{ts,tsx,js,mjs,json,css,md,yaml,yml}]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
