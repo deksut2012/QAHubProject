@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Domain.Products;
+using QAHub.Api.Domain.Requirements;
 using QAHub.Api.Infrastructure.Data;
 
 namespace QAHub.Api.Tests;
@@ -22,5 +23,16 @@ public sealed class DatabaseIntegrationTests
 
         Assert.True(await db.Products.AnyAsync(x => x.Id == product.Id));
         Assert.True(await db.AuditEvents.AnyAsync(x => x.EntityId == product.Id && x.Action == "created"));
+
+        var requirement = new Requirement(product.Id, null, $"JOB-{Guid.NewGuid():N}"[..16], "Integration requirement", "Description", "Acceptance criteria", "qa-user");
+        db.Requirements.Add(requirement);
+        await db.SaveChangesAsync();
+        var comment = new RequirementComment(requirement.Id, "qa-user", "Integration comment");
+        db.RequirementComments.Add(comment);
+        await db.SaveChangesAsync();
+
+        Assert.True(await db.Requirements.AnyAsync(x => x.Id == requirement.Id));
+        Assert.True(await db.RequirementComments.AnyAsync(x => x.RequirementId == requirement.Id));
+        Assert.True(await db.AuditEvents.AnyAsync(x => x.EntityId == requirement.Id && x.EntityType == nameof(Requirement)));
     }
 }

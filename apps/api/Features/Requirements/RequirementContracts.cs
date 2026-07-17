@@ -5,3 +5,7 @@ public sealed record UpdateRequirementRequest(Guid? ModuleId,string? Title,strin
 public sealed record TransitionRequirementRequest(RequirementStatus Status);
 public sealed record RequirementResponse(Guid Id,Guid ProductId,Guid? ModuleId,string JobNumber,string Title,string Description,string AcceptanceCriteria,string? Assignee,RequirementStatus Status,DateTimeOffset CreatedAtUtc,DateTimeOffset UpdatedAtUtc);
 public sealed record RequirementCollectionResponse(IReadOnlyList<RequirementResponse> Items,int Page,int PageSize,int TotalCount);
+public sealed record CreateRequirementCommentRequest(string? Body);
+public sealed record RequirementCommentResponse(Guid Id,string AuthorId,string Body,DateTimeOffset CreatedAtUtc);
+public sealed record CreateRequirementAttachmentRequest(string? FileName,string? ContentType,string? ContentBase64);
+public sealed record RequirementAttachmentResponse(Guid Id,string FileName,string ContentType,long SizeBytes,string UploadedBy,DateTimeOffset UploadedAtUtc);

@@ -20,6 +20,8 @@ public sealed class QAHubDbContext(
     public DbSet<AppRole> Roles => Set<AppRole>();
     public DbSet<UserRole> UserRoles => Set<UserRole>();
     public DbSet<Requirement> Requirements => Set<Requirement>();
+    public DbSet<RequirementComment> RequirementComments => Set<RequirementComment>();
+    public DbSet<RequirementAttachment> RequirementAttachments => Set<RequirementAttachment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -95,6 +97,22 @@ public sealed class QAHubDbContext(
         requirement.HasIndex(x => new { x.ProductId, x.Status, x.UpdatedAtUtc });
         requirement.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
         requirement.HasOne<ProductModule>().WithMany().HasForeignKey(x => x.ModuleId).OnDelete(DeleteBehavior.Restrict);
+
+        var comment = modelBuilder.Entity<RequirementComment>();
+        comment.ToTable("RequirementComments"); comment.HasKey(x => x.Id);
+        comment.Property(x => x.AuthorId).HasMaxLength(200).IsRequired();
+        comment.Property(x => x.Body).HasMaxLength(4000).IsRequired();
+        comment.HasIndex(x => new { x.RequirementId, x.CreatedAtUtc });
+        comment.HasOne<Requirement>().WithMany().HasForeignKey(x => x.RequirementId).OnDelete(DeleteBehavior.Cascade);
+
+        var attachment = modelBuilder.Entity<RequirementAttachment>();
+        attachment.ToTable("RequirementAttachments"); attachment.HasKey(x => x.Id);
+        attachment.Property(x => x.FileName).HasMaxLength(255).IsRequired();
+        attachment.Property(x => x.ContentType).HasMaxLength(200).IsRequired();
+        attachment.Property(x => x.Content).HasColumnType("varbinary(max)").IsRequired();
+        attachment.Property(x => x.UploadedBy).HasMaxLength(200).IsRequired();
+        attachment.HasIndex(x => new { x.RequirementId, x.UploadedAtUtc });
+        attachment.HasOne<Requirement>().WithMany().HasForeignKey(x => x.RequirementId).OnDelete(DeleteBehavior.Cascade);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -109,7 +127,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement;
+        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
@@ -125,6 +143,8 @@ public sealed class QAHubDbContext(
             ProductModule module => module.ProductId,
             ProductEnvironment environment => environment.ProductId,
             Requirement requirement => requirement.ProductId,
+            RequirementComment comment => Requirements.Where(x => x.Id == comment.RequirementId).Select(x => (Guid?)x.ProductId).FirstOrDefault(),
+            RequirementAttachment attachment => Requirements.Where(x => x.Id == attachment.RequirementId).Select(x => (Guid?)x.ProductId).FirstOrDefault(),
             _ => (Guid?)null,
         };
         var changes = entry.Properties
