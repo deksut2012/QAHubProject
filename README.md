@@ -4,8 +4,8 @@
 
 ## สถานะโครงการ
 
-- Phase ปัจจุบัน: **Phase 0 — Discovery & Alignment**
-- สถานะ: **In progress**
+- Phase ปัจจุบัน: **Phase 1 — Platform Foundation (technical scaffold)**
+- Phase 0 gate: **Conditional GO** สำหรับ technical foundation; business workflow/owner approvals ยังต้องปิดก่อนเริ่ม module จริง
 - เป้าหมาย Phase 0: ทำให้ Project Charter, MVP Scope, Initial Backlog, Architecture Direction และ Owner พร้อมขออนุมัติ
 - เอกสารทำงาน: [docs/phase-0/README.md](docs/phase-0/README.md)
 
@@ -23,3 +23,31 @@
 - AI output ต้องเป็น Draft และผ่าน Human Review ก่อนเผยแพร่
 - ห้าม commit secret, token หรือข้อมูลส่วนบุคคลลง Git
 
+## Development
+
+Prerequisites: .NET 10 SDK, Node.js 24, npm และ Git
+
+```powershell
+# API
+dotnet run --project apps/api/QAHub.Api.csproj
+
+# Web
+npm.cmd --prefix apps/web run dev
+```
+
+Quality gates:
+
+```powershell
+dotnet build QAHub.slnx
+dotnet test QAHub.slnx --no-build
+npm.cmd --prefix apps/web run lint
+npm.cmd --prefix apps/web run build
+dotnet list QAHub.slnx package --vulnerable --include-transitive
+npm.cmd --prefix apps/web audit --audit-level=moderate
+```
+
+Endpoints:
+
+- Web: `http://localhost:3000`
+- API health: `http://localhost:5000/health` (พอร์ตจริงดูจาก output ของ `dotnet run`)
+- API system info: `/api/v1/system/info`

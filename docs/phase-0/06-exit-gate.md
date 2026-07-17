@@ -1,6 +1,6 @@
 # Phase 0 Exit Gate
 
-สถานะปัจจุบัน: **NOT READY — awaiting discovery and approvals**
+สถานะปัจจุบัน: **CONDITIONAL GO — technical scaffold only**
 
 ## Gate Checklist
 
@@ -22,7 +22,7 @@
 - ยังไม่มี current-workflow evidence และ sanitized sample data
 - KPI ยังไม่มี baseline จากข้อมูลจริง
 - Identity Provider และ DEV hosting target ยังไม่ระบุ
-- เครื่องพัฒนายังไม่มี .NET 10 SDK และ Docker engine ยังไม่ทำงาน
+- Business module implementation ห้ามเริ่มจนกว่า workflow evidence, owner และ MVP approval จะครบ
 
 ## Approval Record
 
@@ -37,5 +37,5 @@
 ## Exit Decision
 
 - [ ] GO — เริ่ม Phase 1 ตาม approved baseline
-- [ ] CONDITIONAL GO — ระบุ condition, owner และ due date
-- [x] NO GO — Phase 0 ยังอยู่ระหว่าง Discovery
+- [x] CONDITIONAL GO — อนุญาต repository/toolchain/API/Web/test scaffold; ห้ามเริ่ม business module หรือ deployment integration จนปิด Current Blockers
+- [ ] NO GO
