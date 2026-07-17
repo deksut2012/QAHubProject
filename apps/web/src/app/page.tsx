@@ -1,4 +1,5 @@
 import styles from "./page.module.css";
+import Link from "next/link";
 
 const foundations = [
   ["API", ".NET 10 LTS", "ready"],
@@ -60,6 +61,7 @@ export default function Home() {
           )}
         </ol>
       </section>
+      <Link href="/products" className={styles.openProducts}>เปิดหน้าจัดการ Products →</Link>
     </main>
   );
 }
