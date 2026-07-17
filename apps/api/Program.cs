@@ -9,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 builder.Services.AddHealthChecks();
+builder.Services.AddHttpContextAccessor();
 
 var databaseConnection = builder.Configuration.GetConnectionString("QAHub")
     ?? "Server=(localdb)\\MSSQLLocalDB;Database=QAHub;Integrated Security=True";
