@@ -73,3 +73,7 @@ Endpoints:
 ## Phase 1
 
 Platform Foundation implementation is complete. See [Phase 1 delivery and exit conditions](docs/phase-1/README.md) and the [operations runbook](docs/runbooks/operations.md).
+
+## UI source of truth
+
+ทุกหน้าของ Web application ต้องยึด `QA_Hub_UI_Prototype.html` เป็นหลักสำหรับ App Shell, navigation, design tokens, typography, spacing, cards, forms, tables และ responsive behavior หากต้องเพิ่ม UI pattern ใหม่ ให้ขยายจากภาษาภาพของ Prototype เดิมและบันทึกเหตุผลเมื่อจำเป็นต้องแตกต่าง

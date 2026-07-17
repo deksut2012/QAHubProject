@@ -45,7 +45,7 @@ export default async function ProductDetailPage({
     : [];
 
   return (
-    <main className={styles.page}>
+    <main>
       <header className={styles.header}>
         <Link className={styles.back} href="/products">← Products</Link>
         <p className={styles.eyebrow}>PRODUCT · {product.code}</p>
