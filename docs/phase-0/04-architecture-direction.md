@@ -5,7 +5,7 @@
 ## Proposed Baseline
 
 - Frontend: Next.js + TypeScript
-- Backend: .NET 8 Web API
+- Backend: .NET 10 LTS Web API (แทน .NET 8 ในแผนเดิม เนื่องจาก .NET 8 สิ้นสุดการรองรับเดือนพฤศจิกายน 2026)
 - Database: เลือก SQL Server หรือ PostgreSQL หลังยืนยัน hosting/licensing/team skill
 - API style: REST, OpenAPI-first, versioned endpoints
 - Deployment: containerized application แยก DEV/UAT/PROD
@@ -54,4 +54,3 @@
 5. Data classification/retention
 6. CI/CD platform และ environment approval flow
 7. Browser support และ accessibility target
-

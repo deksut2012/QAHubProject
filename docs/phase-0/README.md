@@ -16,6 +16,10 @@
 | [08-role-permission-matrix.md](08-role-permission-matrix.md) | Proposed roles และ least-privilege permissions | Ready for review |
 | [09-kpi-catalog.md](09-kpi-catalog.md) | สูตร KPI, source และ guardrail | Ready for review |
 | [10-pilot-recommendation.md](10-pilot-recommendation.md) | เปรียบเทียบและเสนอ Pilot Product | Ready for decision |
+| [11-domain-model.md](11-domain-model.md) | Conceptual entities, ownership และ traceability | Ready for review |
+| [12-api-audit-contract.md](12-api-audit-contract.md) | API conventions, errors, concurrency และ audit events | Ready for review |
+| [13-phase-1-readiness.md](13-phase-1-readiness.md) | Entry criteria และ execution plan สำหรับ Foundation | Draft |
+| [Architecture Decisions](../architecture/README.md) | ADR สำหรับ stack และโครงสร้างระบบ | Proposed |
 
 ## Definition of Done
 
