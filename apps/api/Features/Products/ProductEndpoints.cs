@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Domain.Products;
 using QAHub.Api.Infrastructure.Data;
+using QAHub.Api.Infrastructure.Security;
 
 namespace QAHub.Api.Features.Products;
 
@@ -9,7 +10,8 @@ public static class ProductEndpoints
 {
     public static IEndpointRouteBuilder MapProductEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/v1/products").WithTags("Products");
+        var group = endpoints.MapGroup("/api/v1/products").WithTags("Products")
+            .RequireAuthorization(AuthorizationPolicies.ProductAccess);
         group.MapGet("/", GetProducts).WithName("GetProducts");
         group.MapGet("/{id:guid}", GetProduct).WithName("GetProduct");
         group.MapPost("/", CreateProduct).WithName("CreateProduct");

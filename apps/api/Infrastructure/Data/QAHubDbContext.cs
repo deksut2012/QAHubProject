@@ -2,6 +2,7 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using QAHub.Api.Domain.Auditing;
+using QAHub.Api.Domain.Identity;
 using QAHub.Api.Domain.Products;
 
 namespace QAHub.Api.Infrastructure.Data;
@@ -14,6 +15,9 @@ public sealed class QAHubDbContext(
     public DbSet<ProductModule> ProductModules => Set<ProductModule>();
     public DbSet<ProductEnvironment> ProductEnvironments => Set<ProductEnvironment>();
     public DbSet<AuditEvent> AuditEvents => Set<AuditEvent>();
+    public DbSet<UserAccount> Users => Set<UserAccount>();
+    public DbSet<AppRole> Roles => Set<AppRole>();
+    public DbSet<UserRole> UserRoles => Set<UserRole>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -57,6 +61,24 @@ public sealed class QAHubDbContext(
         audit.Property(x => x.ChangesJson).HasColumnType("nvarchar(max)").IsRequired();
         audit.HasIndex(x => new { x.EntityType, x.EntityId, x.OccurredAtUtc });
         audit.HasIndex(x => new { x.ProductId, x.OccurredAtUtc });
+
+        var user = modelBuilder.Entity<UserAccount>();
+        user.ToTable("Users"); user.HasKey(x => x.Id);
+        user.Property(x => x.ExternalId).HasMaxLength(200).IsRequired();
+        user.Property(x => x.DisplayName).HasMaxLength(200).IsRequired();
+        user.Property(x => x.Email).HasMaxLength(320);
+        user.HasIndex(x => x.ExternalId).IsUnique();
+
+        var role = modelBuilder.Entity<AppRole>();
+        role.ToTable("Roles"); role.HasKey(x => x.Id);
+        role.Property(x => x.Code).HasMaxLength(100).IsRequired();
+        role.Property(x => x.Name).HasMaxLength(200).IsRequired();
+        role.HasIndex(x => x.Code).IsUnique();
+
+        var userRole = modelBuilder.Entity<UserRole>();
+        userRole.ToTable("UserRoles"); userRole.HasKey(x => new { x.UserId, x.RoleId });
+        userRole.HasOne(x => x.User).WithMany(x => x.Roles).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+        userRole.HasOne(x => x.Role).WithMany(x => x.Users).HasForeignKey(x => x.RoleId).OnDelete(DeleteBehavior.Restrict);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -71,14 +93,16 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment;
+        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
         var context = httpContextAccessor?.HttpContext;
         var actorId = context?.User.Identity?.Name ?? "anonymous";
         var correlationId = context?.TraceIdentifier ?? "background";
-        var entityId = (Guid)(entry.Property("Id").CurrentValue ?? Guid.Empty);
+        var entityId = entry.Entity is UserRole assignment
+            ? assignment.UserId
+            : (Guid)(entry.Property("Id").CurrentValue ?? Guid.Empty);
         Guid? productId = entry.Entity switch
         {
             Product product => product.Id,

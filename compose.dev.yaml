@@ -1,0 +1,24 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__QAHub: Server=sqlserver,1433;Database=QAHub;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True
+    ports:
+      - "5120:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    environment:
+      QAHUB_API_URL: http://api:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api

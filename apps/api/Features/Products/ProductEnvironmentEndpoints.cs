@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Domain.Products;
 using QAHub.Api.Infrastructure.Data;
+using QAHub.Api.Infrastructure.Security;
 
 namespace QAHub.Api.Features.Products;
 
@@ -11,7 +12,9 @@ public static class ProductEnvironmentEndpoints
 {
     public static IEndpointRouteBuilder MapProductEnvironmentEndpoints(this IEndpointRouteBuilder endpoints)
     {
-        var group = endpoints.MapGroup("/api/v1/products/{productId:guid}/environments").WithTags("Product Environments");
+        var group = endpoints.MapGroup("/api/v1/products/{productId:guid}/environments")
+            .WithTags("Product Environments")
+            .RequireAuthorization(AuthorizationPolicies.ProductAccess);
         group.MapGet("/", GetAll).WithName("GetProductEnvironments");
         group.MapPost("/", Create).WithName("CreateProductEnvironment");
         return endpoints;

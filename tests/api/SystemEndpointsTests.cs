@@ -37,5 +37,16 @@ public sealed class SystemEndpointsTests : IClassFixture<WebApplicationFactory<P
         Assert.Equal(correlationId, response.Headers.GetValues("X-Correlation-ID").Single());
     }
 
+    [Fact]
+    public async Task DevelopmentSessionUsesSystemAdministratorRole()
+    {
+        var response = await _client.GetAsync("/api/v1/session");
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("dev-user", body, StringComparison.Ordinal);
+        Assert.Contains("SystemAdmin", body, StringComparison.Ordinal);
+    }
+
     private sealed record SystemInfoResponse(string Service, string Version, string Status);
 }

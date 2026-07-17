@@ -66,3 +66,10 @@ Endpoints:
 - API system info: `/api/v1/system/info`
 - Products: `GET/POST /api/v1/products`, `GET/PUT /api/v1/products/{id}`
 - Product modules: `GET/POST /api/v1/products/{productId}/modules`, `GET/PUT /api/v1/products/{productId}/modules/{id}`
+- Session: `GET /api/v1/session`
+- User/Role administration: `/api/v1/admin/users`, `/api/v1/admin/roles`
+- Audit events: `GET /api/v1/audit-events`
+
+## Phase 1
+
+Platform Foundation implementation is complete. See [Phase 1 delivery and exit conditions](docs/phase-1/README.md) and the [operations runbook](docs/runbooks/operations.md).

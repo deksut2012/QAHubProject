@@ -2,7 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   async rewrites() {
-    return [{ source: "/backend/:path*", destination: "http://localhost:5120/api/:path*" }];
+    const apiUrl = process.env.QAHUB_API_URL ?? "http://localhost:5120";
+    return [{ source: "/backend/:path*", destination: `${apiUrl}/api/:path*` }];
   },
 };
 

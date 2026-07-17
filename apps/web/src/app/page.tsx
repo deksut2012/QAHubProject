@@ -62,6 +62,8 @@ export default function Home() {
         </ol>
       </section>
       <Link href="/products" className={styles.openProducts}>เปิดหน้าจัดการ Products →</Link>
+      <Link href="/audit" className={styles.secondaryLink}>ดู Audit History →</Link>
+      <Link href="/admin" className={styles.secondaryLink}>จัดการ Users & Roles →</Link>
     </main>
   );
 }
