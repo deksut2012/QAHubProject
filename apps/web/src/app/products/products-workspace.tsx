@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 import styles from "./products.module.css";
 
 type Product = { id: string; code: string; name: string; isActive: boolean };
@@ -63,7 +64,7 @@ export function ProductsWorkspace({ initialProducts, initialError }: { initialPr
         <div className={styles.listHead}><div><span className={styles.step}>PRODUCT DIRECTORY</span><h2>Product ทั้งหมด</h2></div><strong>{products.length}</strong></div>
         {error && <p className={styles.error}>{error}</p>}
         {loading ? <p className={styles.muted}>กำลังโหลดข้อมูล...</p> : products.length === 0 ? <p className={styles.empty}>ยังไม่มี Product — เพิ่มรายการแรกจากแบบฟอร์มด้านซ้าย</p> : (
-          <div className={styles.rows}>{products.map((product) => <article key={product.id}><span className={styles.logo}>{product.code.slice(0, 2)}</span><div><strong>{product.name}</strong><p>{product.code}</p></div><span className={product.isActive ? styles.active : styles.inactive}>{product.isActive ? "Active" : "Inactive"}</span></article>)}</div>
+          <div className={styles.rows}>{products.map((product) => <Link className={styles.productLink} href={`/products/${product.id}`} key={product.id}><span className={styles.logo}>{product.code.slice(0, 2)}</span><div><strong>{product.name}</strong><p>{product.code}</p></div><span className={product.isActive ? styles.active : styles.inactive}>{product.isActive ? "Active" : "Inactive"}</span></Link>)}</div>
         )}
       </section>
     </div>
