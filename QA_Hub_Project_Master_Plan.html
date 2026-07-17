@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SeniorSoft QA Hub - Project Master Plan</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;--surface:#ffffff;--surface2:#f8fafc;--line:#dce3ee;
+      --text:#172033;--muted:#667085;--primary:#2563eb;--primary2:#1d4ed8;
+      --success:#15803d;--warning:#b45309;--danger:#b91c1c;--info:#0e7490;
+      --nav:#0f172a;--shadow:0 8px 24px rgba(15,23,42,.08);--radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--text);line-height:1.55}
+    a{color:inherit;text-decoration:none}
+    .layout{display:flex;min-height:100vh}
+    .sidebar{
+      position:fixed;left:0;top:0;bottom:0;width:280px;background:var(--nav);color:#fff;
+      padding:18px 14px;overflow:auto;z-index:30
+    }
+    .brand{padding:8px 10px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .brand h1{font-size:18px;margin:0}.brand p{font-size:12px;color:#aab5c7;margin:4px 0 0}
+    .nav-title{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;padding:18px 10px 8px}
+    .nav a{display:block;padding:9px 11px;margin:3px 0;border-radius:9px;color:#dbe4f0;font-size:13px}
+    .nav a:hover{background:#23314a;color:#fff}
+    .main{margin-left:280px;width:calc(100% - 280px)}
+    .topbar{
+      background:#fff;border-bottom:1px solid var(--line);padding:14px 24px;position:sticky;top:0;z-index:20;
+      display:flex;align-items:center;justify-content:space-between;gap:12px
+    }
+    .topbar h2{font-size:18px;margin:0}.topbar small{color:var(--muted)}
+    .content{padding:24px;max-width:1600px;margin:auto}
+    .hero{
+      background:linear-gradient(135deg,#1d4ed8,#0f766e);color:#fff;border-radius:20px;padding:30px;
+      box-shadow:var(--shadow);margin-bottom:20px
+    }
+    .hero h1{font-size:32px;margin:0 0 8px}.hero p{max-width:1000px;margin:0;color:#e7efff}
+    .hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .pill{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.16);font-size:12px}
+    .section{margin-top:24px;scroll-margin-top:90px}
+    .section-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-end;margin-bottom:12px}
+    .section-head h2{margin:0;font-size:24px}.section-head p{margin:4px 0 0;color:var(--muted)}
+    .grid{display:grid;gap:16px}.cols-4{grid-template-columns:repeat(4,1fr)}.cols-3{grid-template-columns:repeat(3,1fr)}.cols-2{grid-template-columns:repeat(2,1fr)}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+    .card h3{margin:0 0 8px;font-size:17px}.card p{margin:0;color:var(--muted)}
+    .metric{font-size:30px;font-weight:800;margin-top:8px}.metric-label{font-size:12px;color:var(--muted)}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px;background:#fff}
+    table{width:100%;border-collapse:collapse;min-width:950px}
+    th,td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:13px}
+    th{background:#f8fafc;color:#475467;position:sticky;top:0}
+    tr:last-child td{border-bottom:0}
+    .status{display:inline-block;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700}
+    .planned{background:#e0e7ff;color:#3730a3}.progress{background:#dbeafe;color:#1d4ed8}.done{background:#dcfce7;color:#166534}
+    .risk{background:#fee2e2;color:#991b1b}.warn{background:#fef3c7;color:#92400e}.info{background:#cffafe;color:#155e75}
+    .phase{border-left:5px solid var(--primary)}
+    .phase h3{display:flex;justify-content:space-between;gap:10px}
+    .checklist{list-style:none;padding:0;margin:10px 0 0}
+    .checklist li{position:relative;padding:7px 0 7px 28px;border-bottom:1px dashed #e5e7eb}
+    .checklist li:last-child{border-bottom:0}
+    .checklist li:before{content:"☐";position:absolute;left:2px;color:var(--primary);font-weight:700}
+    .gate{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:14px}
+    .gate h4{margin:0 0 6px;color:#9a3412}
+    .timeline{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+    .month{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;min-height:170px}
+    .month h4{margin:0 0 8px}.month ul{padding-left:18px;margin:0}.month li{font-size:12px;margin:5px 0}
+    .raci td:not(:first-child),.raci th:not(:first-child){text-align:center}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    .code{font-family:Consolas,monospace;background:#0f172a;color:#e2e8f0;padding:16px;border-radius:12px;white-space:pre-wrap;font-size:12px}
+    .callout{padding:14px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a}
+    .footer{margin:30px 0 10px;text-align:center;color:var(--muted);font-size:12px}
+    .menu{display:none}
+    @media(max-width:1200px){
+      .cols-4{grid-template-columns:repeat(2,1fr)}.cols-3{grid-template-columns:repeat(2,1fr)}
+      .timeline{grid-template-columns:repeat(3,1fr)}
+    }
+    @media(max-width:800px){
+      .sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}
+      .main{margin-left:0;width:100%}.menu{display:inline-block;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px}
+      .content{padding:14px}.cols-4,.cols-3,.cols-2,.timeline{grid-template-columns:1fr}
+      .hero{padding:22px}.hero h1{font-size:25px}
+    }
+    @media print{
+      .sidebar,.topbar{display:none}.main{margin:0;width:100%}.content{padding:0}.card,.hero{box-shadow:none}
+      .section{break-inside:avoid}
+    }
+  </style>
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <h1>SeniorSoft QA Hub</h1>
+      <p>Project Master Plan & Control</p>
+    </div>
+    <div class="nav">
+      <div class="nav-title">Project Control</div>
+      <a href="#overview">1. ภาพรวมโครงการ</a>
+      <a href="#scope">2. ขอบเขตระบบ</a>
+      <a href="#governance">3. Governance</a>
+      <a href="#workstreams">4. Workstreams</a>
+      <a href="#roadmap">5. Roadmap</a>
+      <a href="#phases">6. Phase Plan</a>
+      <a href="#sprints">7. Sprint Plan</a>
+      <a href="#raci">8. RACI</a>
+      <a href="#dependencies">9. Dependencies</a>
+      <a href="#quality">10. Quality Gates</a>
+      <a href="#risks">11. Risk Register</a>
+      <a href="#kpi">12. KPI</a>
+      <a href="#checklist">13. Master Checklist</a>
+      <a href="#handover">14. Go-live & Handover</a>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div><h2>QA Hub Project Master Plan</h2><small>เอกสารควบคุมโครงการฉบับรวม</small></div>
+      <button class="menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ เมนู</button>
+    </div>
+
+    <div class="content">
+      <section class="hero" id="overview">
+        <h1>แผนควบคุมโครงการ SeniorSoft QA Hub</h1>
+        <p>แผนลำดับการพัฒนาแบบครบวงจร ตั้งแต่การวางรากฐานระบบ Test Management, Requirement Traceability, Test Execution, Bug, Release, QA Toolbox, Integration, AI Test Assistant, Markdown Documentation Analyzer, Smart Regression จนถึง Production และการวัดผลหลังใช้งาน</p>
+        <div class="hero-meta">
+          <span class="pill">ระยะเวลาเป้าหมาย 9–12 เดือน</span>
+          <span class="pill">แบ่ง 13 Phases</span>
+          <span class="pill">26 Sprints โดยประมาณ</span>
+          <span class="pill">MVP ภายใน 4–5 เดือน</span>
+          <span class="pill">รองรับ Multi-Product</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="grid cols-4">
+          <div class="card"><div class="metric-label">Functional Workstreams</div><div class="metric">10</div><p>ตั้งแต่ Foundation ถึง AI & Integration</p></div>
+          <div class="card"><div class="metric-label">Core Modules</div><div class="metric">15+</div><p>Requirement, Test, Bug, Release, Toolbox และอื่น ๆ</p></div>
+          <div class="card"><div class="metric-label">Primary Quality Gates</div><div class="metric">8</div><p>ควบคุมก่อนผ่านแต่ละช่วงสำคัญ</p></div>
+          <div class="card"><div class="metric-label">Pilot Products</div><div class="metric">2</div><p>แนะนำเริ่ม ProMaxx และ MyMaxx2</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="scope">
+        <div class="section-head"><div><h2>2. ขอบเขตระบบทั้งหมด</h2><p>รายการฟังก์ชันที่ต้องอยู่ภายใต้แผนโครงการ</p></div></div>
+        <div class="grid cols-3">
+          <div class="card"><h3>Product & Access Foundation</h3><ul class="checklist">
+            <li>Product, Module, Platform และ Environment</li><li>User, Role, Permission และ Product Access</li>
+            <li>Configuration, Master Data และ Audit Log</li><li>Notification และ Global Search</li></ul></div>
+          <div class="card"><h3>Requirement Management</h3><ul class="checklist">
+            <li>Feature, Bug Fix, Change Request และ Customer Case</li><li>Acceptance Criteria และ Attachment</li>
+            <li>Requirement Version และ Approval</li><li>Traceability ไปยัง Test Case, Bug และ Release</li></ul></div>
+          <div class="card"><h3>Test Design</h3><ul class="checklist">
+            <li>Scenario, Test Case, Steps และ Test Data</li><li>Version, Clone, Template, Tag และ Review</li>
+            <li>Import/Export Excel</li><li>Positive, Negative, Boundary, Permission, API และ Regression</li></ul></div>
+          <div class="card"><h3>Test Execution</h3><ul class="checklist">
+            <li>Test Cycle, Suite, Assignment และ Environment</li><li>Pass, Fail, Blocked, Skipped</li>
+            <li>Actual Result, Evidence และ Comment</li><li>Retest, Re-run และ Execution History</li></ul></div>
+          <div class="card"><h3>Bug Management</h3><ul class="checklist">
+            <li>Bug Draft, Severity, Priority และ Reproduction</li><li>Kanban Workflow และ Aging</li>
+            <li>Build Fix, Retest และ Closure</li><li>เชื่อม Requirement, Test Run และ Evidence</li></ul></div>
+          <div class="card"><h3>Build & Release</h3><ul class="checklist">
+            <li>Build, Version, Environment และ Deployment Status</li><li>Release Checklist และ Release Note</li>
+            <li>Quality Gate และ QA Sign-off</li><li>Rollback Plan และ Post-release Validation</li></ul></div>
+          <div class="card"><h3>Dashboard & Reporting</h3><ul class="checklist">
+            <li>Pass Rate, Defect Density และ Coverage</li><li>Release Readiness และ Risk</li>
+            <li>Workload, Aging และ SLA</li><li>Export PDF/Excel และ Scheduled Report</li></ul></div>
+          <div class="card"><h3>QA Toolbox</h3><ul class="checklist">
+            <li>SQL Query Library</li><li>API Tester</li><li>Data Generator</li><li>File Compare</li>
+            <li>QR/Barcode Tools</li><li>Log Analyzer</li></ul></div>
+          <div class="card"><h3>AI Test Assistant</h3><ul class="checklist">
+            <li>Requirement → Test Case</li><li>Error/Log → Bug & Regression</li>
+            <li>Markdown → Test Case</li><li>Confidence, Assumption และ Human Review</li></ul></div>
+          <div class="card"><h3>Documentation Intelligence</h3><ul class="checklist">
+            <li>Git Repository Sync</li><li>Branch, Commit และ File Mapping</li>
+            <li>Markdown Parsing และ Source Traceability</li><li>Document Diff และ Change Impact</li></ul></div>
+          <div class="card"><h3>Integration</h3><ul class="checklist">
+            <li>Google Sheet / Gmail / Discord หรือ Slack</li><li>GitHub/GitLab/Webhook</li>
+            <li>CI/CD และ Automation Result Import</li><li>SSO/Directory ในอนาคต</li></ul></div>
+          <div class="card"><h3>Administration & Compliance</h3><ul class="checklist">
+            <li>Backup, Restore และ Retention</li><li>Secret Management และ Data Masking</li>
+            <li>Audit, Access Review และ Security Test</li><li>Monitoring, Alert และ Incident Log</li></ul></div>
+        </div>
+      </section>
+
+      <section class="section" id="governance">
+        <div class="section-head"><div><h2>3. Project Governance</h2><p>โครงสร้างการตัดสินใจและรอบควบคุมโครงการ</p></div></div>
+        <div class="grid cols-3">
+          <div class="card"><h3>Steering Committee</h3><p>อนุมัติ Scope, Budget, Priority, Timeline และรับทราบ Risk สำคัญ</p><ul class="checklist"><li>ประชุมรายเดือน</li><li>อนุมัติ Phase Gate</li><li>ตัดสินใจกรณี Scope Conflict</li></ul></div>
+          <div class="card"><h3>Project Core Team</h3><p>PM/PO, QA Lead, Tech Lead, UX/UI, Dev, DevOps และ Security</p><ul class="checklist"><li>Weekly Project Review</li><li>Backlog Refinement</li><li>Dependency และ Risk Review</li></ul></div>
+          <div class="card"><h3>Delivery Team</h3><p>Frontend, Backend, QA, DevOps และ AI Engineer</p><ul class="checklist"><li>Daily Stand-up</li><li>Sprint Planning/Review</li><li>Definition of Done</li></ul></div>
+        </div>
+        <div class="callout" style="margin-top:16px"><b>หลักการควบคุม Scope:</b> ทุก Change Request ต้องระบุ Business Value, Effort, Risk, Dependency และผลกระทบต่อ Milestone ก่อนนำเข้า Sprint</div>
+      </section>
+
+      <section class="section" id="workstreams">
+        <div class="section-head"><div><h2>4. Workstream Control</h2><p>แบ่งสายงานเพื่อพัฒนาแบบขนาน แต่ควบคุม Dependency ร่วมกัน</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Workstream</th><th>ขอบเขต</th><th>Owner หลัก</th><th>เริ่มได้เมื่อ</th><th>ผลส่งมอบ</th></tr>
+            <tr><td>WS1 Product & Security</td><td>Product, Module, User, Role, Permission, Audit</td><td>Backend Lead</td><td>ทันที</td><td>Core Platform</td></tr>
+            <tr><td>WS2 Requirement & Traceability</td><td>Requirement, Version, Approval, Linkage</td><td>PO + QA Lead</td><td>WS1 พร้อม</td><td>Requirement Module</td></tr>
+            <tr><td>WS3 Test Management</td><td>Scenario, Test Case, Version, Import/Export</td><td>QA Lead</td><td>WS1 + Data Model</td><td>Test Repository</td></tr>
+            <tr><td>WS4 Execution & Bug</td><td>Cycle, Run, Evidence, Bug Workflow</td><td>QA Lead + Dev Lead</td><td>WS3 พร้อม</td><td>Execution Engine</td></tr>
+            <tr><td>WS5 Release & Reporting</td><td>Build, Release, Gate, Dashboard, Report</td><td>PM + QA Lead</td><td>WS2–4 มีข้อมูล</td><td>Release Control</td></tr>
+            <tr><td>WS6 Toolbox</td><td>SQL, API, QR, Compare, Log, Data Generator</td><td>QA Tools Owner</td><td>Security Foundation</td><td>QA Utilities</td></tr>
+            <tr><td>WS7 Integration</td><td>Git, Email, Chat, CI/CD, Webhook</td><td>DevOps</td><td>API Stable</td><td>Connected Workflow</td></tr>
+            <tr><td>WS8 AI Assistant</td><td>Requirement, Error และ Markdown AI</td><td>AI Engineer + QA Lead</td><td>Data Structure Stable</td><td>AI Draft Workflow</td></tr>
+            <tr><td>WS9 Document Intelligence</td><td>Parser, Diff, Traceability, Impact</td><td>AI/Backend Lead</td><td>Git Integration</td><td>Smart Documentation</td></tr>
+            <tr><td>WS10 Operations</td><td>Monitoring, Backup, Security, Training, Support</td><td>DevOps + PM</td><td>เริ่มตั้งแต่ Phase 1</td><td>Production Readiness</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="roadmap">
+        <div class="section-head"><div><h2>5. Roadmap ระดับโครงการ</h2><p>แนะนำระยะเวลา 12 เดือน โดย MVP พร้อมใช้งานช่วงเดือนที่ 5</p></div></div>
+        <div class="timeline">
+          <div class="month"><h4>เดือน 1</h4><ul><li>Discovery</li><li>Architecture</li><li>Data Model</li><li>UX Prototype</li><li>Project Setup</li></ul></div>
+          <div class="month"><h4>เดือน 2</h4><ul><li>Auth/RBAC</li><li>Product/Module</li><li>Requirement</li><li>Audit Log</li></ul></div>
+          <div class="month"><h4>เดือน 3</h4><ul><li>Test Case</li><li>Version/Template</li><li>Import Excel</li><li>Traceability</li></ul></div>
+          <div class="month"><h4>เดือน 4</h4><ul><li>Test Cycle</li><li>Execution</li><li>Evidence</li><li>Bug Workflow</li></ul></div>
+          <div class="month"><h4>เดือน 5</h4><ul><li>Build/Release</li><li>Dashboard</li><li>MVP UAT</li><li>Pilot Go-live</li></ul></div>
+          <div class="month"><h4>เดือน 6</h4><ul><li>QA Toolbox</li><li>Reports</li><li>Notification</li><li>Hardening</li></ul></div>
+          <div class="month"><h4>เดือน 7</h4><ul><li>Git Integration</li><li>Markdown Parser</li><li>Source Mapping</li></ul></div>
+          <div class="month"><h4>เดือน 8</h4><ul><li>Requirement AI</li><li>Error Analyzer</li><li>Review Workflow</li></ul></div>
+          <div class="month"><h4>เดือน 9</h4><ul><li>Markdown AI</li><li>Document Diff</li><li>Impact Analysis</li></ul></div>
+          <div class="month"><h4>เดือน 10</h4><ul><li>CI/CD Integration</li><li>Automation Import</li><li>Smart Regression</li></ul></div>
+          <div class="month"><h4>เดือน 11</h4><ul><li>Scale Test</li><li>Security Review</li><li>Multi-product Rollout</li></ul></div>
+          <div class="month"><h4>เดือน 12</h4><ul><li>Organization Rollout</li><li>KPI Review</li><li>Optimization</li><li>Phase 2 Backlog</li></ul></div>
+        </div>
+      </section>
+
+      <section class="section" id="phases">
+        <div class="section-head"><div><h2>6. Phase-by-Phase Development Plan</h2><p>ลำดับพัฒนาหลัก พร้อม Entry, Deliverable และ Exit Gate</p></div></div>
+
+        <div class="grid cols-2">
+          <div class="card phase"><h3>Phase 0 — Discovery & Alignment <span class="status planned">2 สัปดาห์</span></h3>
+            <ul class="checklist"><li>รวบรวม Pain Point และ Workflow ปัจจุบัน</li><li>กำหนด Product Pilot</li><li>กำหนด Scope MVP/Phase 2</li><li>กำหนด KPI และ Success Criteria</li><li>ยืนยัน Integration และ Security Constraint</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Project Charter, Scope, Backlog, Architecture Direction และ Owner ได้รับอนุมัติ</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 1 — Platform Foundation <span class="status planned">3 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Frontend/Backend Project Setup</li><li>Database Migration</li><li>Authentication และ RBAC</li><li>Product/Module/Environment</li><li>Audit Log และ Error Handling</li><li>CI/CD และ Dev/Test Environment</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Login, Permission, Product Configuration และ Deployment Pipeline ผ่าน Integration Test</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 2 — Requirement Management <span class="status planned">3 สัปดาห์</span></h3>
+            <ul class="checklist"><li>CRUD Requirement</li><li>Acceptance Criteria</li><li>Version และ Approval</li><li>Attachment/Comment</li><li>Filter/Search/Saved View</li><li>Requirement Status Workflow</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Requirement 1 รายการสามารถ Review, Approve และ Trace ได้ครบ</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 3 — Test Design Repository <span class="status planned">4 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Test Scenario และ Test Case</li><li>Step Editor และ Test Data</li><li>Version, Clone และ Template</li><li>Tag/Priority/Test Type</li><li>Import/Export Excel</li><li>Requirement Coverage</li><li>Review/Approve Workflow</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Test Case พร้อม Version และ Link Requirement สามารถนำไปใช้ใน Cycle ได้</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 4 — Test Cycle & Execution <span class="status planned">4 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Cycle/Suite/Assignment</li><li>Execution Result</li><li>Actual Result และ Evidence</li><li>Blocked/Skipped Reason</li><li>Re-run/Retest</li><li>Execution History</li><li>Bulk Update และ Progress</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>QA สามารถสร้าง Cycle, Run, Fail และแนบหลักฐานได้ครบ End-to-End</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 5 — Bug Management <span class="status planned">3 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Create Bug from Failed Test</li><li>Severity/Priority/Aging</li><li>Kanban Workflow</li><li>Assign Dev และ Fix Build</li><li>Retest และ Closure</li><li>Duplicate และ Related Bug</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Fail → Bug → Fix Build → Retest → Closed ทำงานครบและมี Audit</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 6 — Build, Release & Quality Gate <span class="status planned">3 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Build/Version/Environment</li><li>Release Candidate</li><li>Release Checklist</li><li>Risk และ Readiness Score</li><li>QA Sign-off</li><li>Release Note และ Rollback Plan</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>ระบบบล็อก Sign-off เมื่อ Critical Gate ไม่ผ่าน และแสดงเหตุผลได้</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 7 — Dashboard & Reporting <span class="status planned">3 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Pass/Fail/Blocked Trend</li><li>Coverage และ Requirement Status</li><li>Bug Aging และ Severity</li><li>Release Readiness</li><li>QA Workload</li><li>Export Report</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Dashboard ใช้ข้อมูลจริงและผลรวมตรงกับ Transaction Data</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 8 — QA Toolbox <span class="status planned">4 สัปดาห์</span></h3>
+            <ul class="checklist"><li>SQL Library แบบ Read-only First</li><li>API Tester</li><li>Data Generator</li><li>File Compare</li><li>QR/Barcode</li><li>Log Analyzer</li><li>Execution Audit และ Permission</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>เครื่องมือทุกตัวผ่าน Security Review และไม่อนุญาต Dangerous Action โดยไม่มี Control</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 9 — Integration <span class="status planned">3 สัปดาห์</span></h3>
+            <ul class="checklist"><li>GitHub/GitLab Repository</li><li>Email/Chat Notification</li><li>Webhook</li><li>Google Sheet Import</li><li>CI/CD Build Status</li><li>Automation Result Import</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Integration มี Retry, Error Log, Secret Storage และ Owner ชัดเจน</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 10 — AI Requirement & Error Assistant <span class="status planned">4 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Requirement → Scenario/Test Case</li><li>Error/Log → Root Cause Draft</li><li>Bug Draft และ Regression Test</li><li>Confidence และ Assumption</li><li>Human Review</li><li>Prompt Audit และ Data Masking</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>AI ผลิต Draft ได้ แต่ไม่ Publish/Close/Execute อัตโนมัติ และผ่าน QA Review 100%</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 11 — Markdown Documentation Intelligence <span class="status planned">4 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Markdown Upload/Repository Sync</li><li>Parser: Heading, Table, List, Code Block, Front Matter</li><li>Business Rule Extraction</li><li>Source File/Section/Line Mapping</li><li>Generate Test Case from Documentation</li><li>Missing/Conflict Detection</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Test Case ทุกเคสมี Source Traceability และ Commit Hash ตรวจสอบย้อนหลังได้</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 12 — Diff, Impact & Smart Regression <span class="status planned">4 สัปดาห์</span></h3>
+            <ul class="checklist"><li>Document Version Diff</li><li>Added/Modified/Removed Rule</li><li>Impacted Test Case Mapping</li><li>Suggested New/Updated Test</li><li>Regression Scope Recommendation</li><li>QA Approval และ Version Update</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Change Impact มี Accuracy ผ่าน Pilot และไม่แก้ Test Case จริงก่อนอนุมัติ</div>
+          </div>
+
+          <div class="card phase"><h3>Phase 13 — Production Rollout & Optimization <span class="status planned">ต่อเนื่อง</span></h3>
+            <ul class="checklist"><li>Pilot ProMaxx/MyMaxx2</li><li>Training และ User Guide</li><li>Monitoring/Alert</li><li>Backup/Restore Drill</li><li>Support Model และ SLA</li><li>Multi-product Rollout</li><li>KPI Review และ Optimization</li></ul>
+            <div class="gate"><h4>Exit Gate</h4>Production Stable, Adoption ผ่านเกณฑ์ และมี Backlog Phase ถัดไป</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="sprints">
+        <div class="section-head"><div><h2>7. Sprint Control Plan</h2><p>ตัวอย่างการแบ่ง 26 Sprints แบบ 2 สัปดาห์</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Sprint</th><th>เป้าหมาย</th><th>Deliverables</th><th>Dependency</th><th>Gate</th></tr>
+            <tr><td>0</td><td>Discovery</td><td>Charter, Scope, Backlog, KPI</td><td>-</td><td>Scope Approved</td></tr>
+            <tr><td>1–2</td><td>Foundation</td><td>Auth, RBAC, Product, Audit, CI/CD</td><td>Sprint 0</td><td>Platform Ready</td></tr>
+            <tr><td>3–4</td><td>Requirement</td><td>Requirement, Approval, Attachment, Search</td><td>Foundation</td><td>Requirement E2E</td></tr>
+            <tr><td>5–6</td><td>Test Repository</td><td>Scenario, Test Case, Step, Version</td><td>Requirement/Data Model</td><td>Test Design Ready</td></tr>
+            <tr><td>7</td><td>Import/Traceability</td><td>Excel Import, Coverage, Mapping</td><td>Test Repository</td><td>Migration Validated</td></tr>
+            <tr><td>8–9</td><td>Execution</td><td>Cycle, Run, Evidence, Status</td><td>Test Case</td><td>Run E2E</td></tr>
+            <tr><td>10</td><td>Bug</td><td>Bug Workflow, Retest</td><td>Execution</td><td>Defect Lifecycle</td></tr>
+            <tr><td>11</td><td>Release</td><td>Build, Gate, Sign-off</td><td>Requirement/Test/Bug</td><td>MVP Feature Complete</td></tr>
+            <tr><td>12</td><td>Dashboard</td><td>KPI, Reports, Export</td><td>Transactional Data</td><td>MVP UAT</td></tr>
+            <tr><td>13</td><td>Pilot Hardening</td><td>Performance, Security, Fixes, Training</td><td>MVP</td><td>Pilot Go-live</td></tr>
+            <tr><td>14–15</td><td>Toolbox</td><td>SQL, API, QR, Compare, Log</td><td>Security</td><td>Toolbox Approved</td></tr>
+            <tr><td>16</td><td>Notification/Integration</td><td>Email, Chat, Webhook</td><td>Stable API</td><td>Integration Stable</td></tr>
+            <tr><td>17–18</td><td>AI Requirement/Error</td><td>AI Draft + Review</td><td>Structured Data</td><td>AI Safety Gate</td></tr>
+            <tr><td>19–20</td><td>Markdown Parser</td><td>Repository, Parser, Traceability</td><td>Git Integration</td><td>Source Mapping</td></tr>
+            <tr><td>21–22</td><td>Markdown AI</td><td>Doc-to-Test, Missing/Conflict</td><td>Parser</td><td>QA Accuracy Review</td></tr>
+            <tr><td>23–24</td><td>Diff & Impact</td><td>Change Detection, Regression Scope</td><td>Version Mapping</td><td>Impact Pilot</td></tr>
+            <tr><td>25</td><td>Automation/CI</td><td>Result Import, Build Trigger</td><td>Integration</td><td>Automation Stable</td></tr>
+            <tr><td>26</td><td>Organization Rollout</td><td>Scale, Training, SLA, KPI Baseline</td><td>All Core Modules</td><td>Production Acceptance</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="raci">
+        <div class="section-head"><div><h2>8. RACI Matrix</h2><p>R = Responsible, A = Accountable, C = Consulted, I = Informed</p></div></div>
+        <div class="table-wrap">
+          <table class="raci">
+            <tr><th>กิจกรรม</th><th>Sponsor</th><th>PM/PO</th><th>QA Lead</th><th>Tech Lead</th><th>Dev</th><th>DevOps</th><th>AI Eng.</th></tr>
+            <tr><td>Scope/Priority</td><td>A</td><td>R</td><td>C</td><td>C</td><td>I</td><td>I</td><td>I</td></tr>
+            <tr><td>Requirement Workflow</td><td>I</td><td>A</td><td>R</td><td>C</td><td>C</td><td>I</td><td>I</td></tr>
+            <tr><td>Test Design Standard</td><td>I</td><td>C</td><td>A/R</td><td>C</td><td>I</td><td>I</td><td>C</td></tr>
+            <tr><td>Architecture</td><td>I</td><td>C</td><td>C</td><td>A/R</td><td>R</td><td>C</td><td>C</td></tr>
+            <tr><td>Security/RBAC</td><td>I</td><td>C</td><td>C</td><td>A</td><td>R</td><td>R</td><td>I</td></tr>
+            <tr><td>Release Gate</td><td>I</td><td>A</td><td>R</td><td>C</td><td>I</td><td>C</td><td>I</td></tr>
+            <tr><td>AI Prompt/Output Standard</td><td>I</td><td>C</td><td>A</td><td>C</td><td>I</td><td>I</td><td>R</td></tr>
+            <tr><td>Git/CI Integration</td><td>I</td><td>I</td><td>C</td><td>A</td><td>C</td><td>R</td><td>C</td></tr>
+            <tr><td>Production Go-live</td><td>A</td><td>R</td><td>R</td><td>R</td><td>C</td><td>R</td><td>I</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="dependencies">
+        <div class="section-head"><div><h2>9. Critical Dependencies</h2><p>จุดที่ต้องควบคุมเพื่อไม่ให้ Timeline ล่าช้า</p></div></div>
+        <div class="grid cols-3">
+          <div class="card"><h3>Data Model Dependency</h3><p>Requirement, Test Case, Run, Bug และ Release ต้องออกแบบ Traceability ก่อนพัฒนา UI เชิงลึก</p></div>
+          <div class="card"><h3>Security Dependency</h3><p>RBAC, Audit และ Secret Management ต้องพร้อมก่อน Toolbox, Repository และ AI Integration</p></div>
+          <div class="card"><h3>AI Dependency</h3><p>AI ต้องรอ Schema, Template และ Review Workflow เสถียร ไม่ควรเริ่มจาก Prompt อย่างเดียว</p></div>
+          <div class="card"><h3>Git Dependency</h3><p>Markdown AI ต้องใช้ Repository Sync, Commit และ File Version ที่เชื่อถือได้</p></div>
+          <div class="card"><h3>Reporting Dependency</h3><p>Dashboard ต้องอิง Transaction จริงหลัง Requirement/Test/Bug พร้อมแล้ว</p></div>
+          <div class="card"><h3>Adoption Dependency</h3><p>ต้องเตรียม Test Case Template, Import Data และ Training ก่อน Pilot Go-live</p></div>
+        </div>
+      </section>
+
+      <section class="section" id="quality">
+        <div class="section-head"><div><h2>10. Quality Gates</h2><p>เกณฑ์บังคับก่อนผ่านแต่ละ Milestone</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Gate</th><th>ช่วง</th><th>เกณฑ์ผ่าน</th><th>ผู้อนุมัติ</th></tr>
+            <tr><td>G1 Scope Gate</td><td>หลัง Discovery</td><td>Scope, KPI, Owner, Product Pilot ชัดเจน</td><td>Sponsor + PM</td></tr>
+            <tr><td>G2 Architecture Gate</td><td>ก่อน Development</td><td>Data Model, Security, Integration Direction ผ่าน Review</td><td>Tech Lead</td></tr>
+            <tr><td>G3 Foundation Gate</td><td>หลัง Phase 1</td><td>Auth/RBAC/Audit/CI ผ่าน Test</td><td>Tech + Security</td></tr>
+            <tr><td>G4 MVP Feature Gate</td><td>หลัง Phase 6</td><td>Requirement→Test→Bug→Release ทำงานครบ</td><td>QA Lead + PM</td></tr>
+            <tr><td>G5 Pilot Gate</td><td>ก่อน Pilot</td><td>Critical Bug = 0, High มี Mitigation, UAT ผ่าน</td><td>QA Lead + Sponsor</td></tr>
+            <tr><td>G6 AI Safety Gate</td><td>ก่อนเปิด AI</td><td>Draft-only, Masking, Audit, Human Review และ Accuracy ผ่านเกณฑ์</td><td>QA + Security</td></tr>
+            <tr><td>G7 Production Gate</td><td>ก่อน Rollout</td><td>Performance, Backup, Monitoring, Training และ Support พร้อม</td><td>Steering Committee</td></tr>
+            <tr><td>G8 Benefits Gate</td><td>หลังใช้งาน 60–90 วัน</td><td>KPI และ Adoption ผ่านเกณฑ์หรือมี Action Plan</td><td>Sponsor + PM</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="risks">
+        <div class="section-head"><div><h2>11. Risk Register</h2><p>ความเสี่ยงระดับโครงการและแนวทางควบคุม</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Risk</th><th>Impact</th><th>Likelihood</th><th>Mitigation</th><th>Owner</th></tr>
+            <tr><td>Scope ใหญ่เกิน MVP</td><td><span class="status risk">High</span></td><td>High</td><td>Lock MVP, ใช้ Change Control และ Prioritization</td><td>PM/PO</td></tr>
+            <tr><td>Data Model เปลี่ยนกลางทาง</td><td><span class="status risk">High</span></td><td>Medium</td><td>Architecture Review และ Prototype Traceability ก่อน Coding</td><td>Tech Lead</td></tr>
+            <tr><td>Import Test Case เดิมไม่สำเร็จ</td><td><span class="status warn">Medium</span></td><td>High</td><td>ทำ Mapping Template และ Pilot Import ตั้งแต่ Sprint 5–7</td><td>QA Lead</td></tr>
+            <tr><td>AI สร้าง Test Case ไม่ตรงบริบท</td><td><span class="status risk">High</span></td><td>Medium</td><td>Human Review, Confidence, Source Reference และ Pilot Accuracy</td><td>AI Eng.</td></tr>
+            <tr><td>ข้อมูลลูกค้าหรือ Secret หลุดเข้า AI</td><td><span class="status risk">Critical</span></td><td>Low/Med</td><td>Masking, Private Model/Policy, Audit และ Restricted Access</td><td>Security</td></tr>
+            <tr><td>Git/Repository Integration ไม่เสถียร</td><td><span class="status warn">Medium</span></td><td>Medium</td><td>Manual Sync First, Retry Queue และ Webhook ภายหลัง</td><td>DevOps</td></tr>
+            <tr><td>ผู้ใช้ไม่ยอมเปลี่ยนจาก Excel</td><td><span class="status risk">High</span></td><td>High</td><td>Import/Export, Pilot Champion, Training และ Quick Win Dashboard</td><td>PM + QA Lead</td></tr>
+            <tr><td>Dashboard ตัวเลขไม่ตรง</td><td><span class="status risk">High</span></td><td>Medium</td><td>Metric Definition, Reconciliation Test และ Data Owner</td><td>QA + Backend</td></tr>
+            <tr><td>Production Performance ต่ำ</td><td><span class="status warn">Medium</span></td><td>Medium</td><td>Load Test, Index Review, Pagination และ Async Processing</td><td>Tech Lead</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" id="kpi">
+        <div class="section-head"><div><h2>12. Project & Product KPI</h2><p>ใช้ติดตามทั้งการส่งมอบโครงการและผลลัพธ์ทาง QA</p></div></div>
+        <div class="grid cols-2">
+          <div class="card"><h3>Project Delivery KPI</h3><ul class="checklist">
+            <li>Sprint Goal Achievement ≥ 85%</li><li>Critical Milestone Delay ≤ 10%</li><li>Escaped Critical Defect = 0</li>
+            <li>Rework จาก Requirement ไม่ชัดเจน ≤ 10%</li><li>UAT Acceptance ≥ 90%</li></ul></div>
+          <div class="card"><h3>Operational QA KPI</h3><ul class="checklist">
+            <li>Requirement Coverage ≥ 95%</li><li>Test Case Reuse เพิ่มขึ้น ≥ 30%</li><li>เวลาเตรียม Test Case ลดลง ≥ 40%</li>
+            <li>Bug Traceability ≥ 95%</li><li>Release Readiness Report ใช้งานทุก Release</li></ul></div>
+          <div class="card"><h3>AI KPI</h3><ul class="checklist">
+            <li>AI Draft Acceptance Rate ≥ 70%</li><li>Source Traceability = 100%</li><li>Critical Hallucination = 0</li>
+            <li>เวลา Review ต่อ Draft ลดลงต่อเนื่อง</li><li>ทุก AI Output มี Reviewer</li></ul></div>
+          <div class="card"><h3>Adoption KPI</h3><ul class="checklist">
+            <li>Active QA User ≥ 90%</li><li>งานใหม่เข้าระบบ ≥ 80% ภายใน 60 วัน</li><li>Excel Manual Tracking ลดลง ≥ 60%</li>
+            <li>User Satisfaction ≥ 4/5</li><li>Support Ticket จากระบบลดลงหลังเดือนที่ 3</li></ul></div>
+        </div>
+      </section>
+
+      <section class="section" id="checklist">
+        <div class="section-head"><div><h2>13. Master Project Checklist</h2><p>Checklist สำหรับ PM ใช้ควบคุมภาพรวม</p></div></div>
+        <div class="grid cols-3">
+          <div class="card"><h3>Planning</h3><ul class="checklist"><li>Project Charter</li><li>Scope และ Out of Scope</li><li>Product Pilot</li><li>Backlog Prioritization</li><li>Budget/Resource</li><li>Milestone Baseline</li></ul></div>
+          <div class="card"><h3>Architecture</h3><ul class="checklist"><li>System Context</li><li>Data Model</li><li>API Standard</li><li>Security Model</li><li>Audit Strategy</li><li>Integration Pattern</li></ul></div>
+          <div class="card"><h3>Delivery</h3><ul class="checklist"><li>Sprint Planning</li><li>Definition of Ready</li><li>Definition of Done</li><li>Code Review</li><li>Automated Test</li><li>Demo และ Retrospective</li></ul></div>
+          <div class="card"><h3>QA & UAT</h3><ul class="checklist"><li>Test Strategy</li><li>Regression Scope</li><li>Performance Test</li><li>Security Test</li><li>UAT Sign-off</li><li>Defect Closure</li></ul></div>
+          <div class="card"><h3>AI Governance</h3><ul class="checklist"><li>Approved Model/Provider</li><li>PII/Secret Masking</li><li>Prompt Version</li><li>Confidence/Assumption</li><li>Human Review</li><li>Audit/Retention</li></ul></div>
+          <div class="card"><h3>Production</h3><ul class="checklist"><li>Deployment Plan</li><li>Backup/Restore</li><li>Rollback</li><li>Monitoring/Alert</li><li>Support Roster</li><li>Known Issue List</li></ul></div>
+          <div class="card"><h3>Training & Adoption</h3><ul class="checklist"><li>User Guide</li><li>Admin Guide</li><li>Training Session</li><li>Pilot Champion</li><li>Feedback Channel</li><li>Adoption Dashboard</li></ul></div>
+          <div class="card"><h3>Control & Reporting</h3><ul class="checklist"><li>Weekly Status</li><li>RAID Log</li><li>Budget Tracking</li><li>Change Request Log</li><li>Decision Log</li><li>Steering Report</li></ul></div>
+          <div class="card"><h3>Closure</h3><ul class="checklist"><li>Acceptance Sign-off</li><li>Handover</li><li>Support SLA</li><li>Lessons Learned</li><li>KPI Baseline</li><li>Phase 2 Roadmap</li></ul></div>
+        </div>
+      </section>
+
+      <section class="section" id="handover">
+        <div class="section-head"><div><h2>14. Go-live, Handover & Operating Model</h2><p>แผนเปลี่ยนจาก Project ไปเป็นระบบใช้งานจริง</p></div></div>
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>Go-live Sequence</h3>
+            <div class="code">1. Freeze MVP Scope
+2. Production Readiness Review
+3. Backup & Rollback Drill
+4. Migrate Product / User / Test Case
+5. Pilot with ProMaxx and MyMaxx2
+6. Hypercare 2–4 weeks
+7. Review KPI and Critical Issues
+8. Roll out remaining Products
+9. Switch to BAU Support</div>
+          </div>
+          <div class="card">
+            <h3>BAU Operating Model</h3>
+            <ul class="checklist"><li>Product Owner ดูแล Backlog</li><li>QA Platform Admin ดูแล Master/Permission</li>
+            <li>Dev Team ดูแล Application Defect</li><li>DevOps ดูแล Infrastructure/Monitoring</li>
+            <li>AI Owner ดูแล Prompt, Model และ Accuracy</li><li>รายเดือนทบทวน KPI, Risk และ Adoption</li></ul>
+          </div>
+        </div>
+        <div class="callout" style="margin-top:16px"><b>ข้อเสนอการเริ่มต้น:</b> ให้ล็อก MVP ที่ Phase 1–7 ก่อน จากนั้น Pilot กับ ProMaxx และ MyMaxx2 เมื่อ Workflow หลักนิ่งแล้วจึงเพิ่ม Toolbox, Integration และ AI เพื่อลดความเสี่ยงด้าน Scope และ Data Model</div>
+      </section>
+
+      <div class="footer">SeniorSoft QA Hub — Project Master Plan | Generated for project control and AI/Dev handoff</div>
+    </div>
+  </main>
+</div>
+<script>
+  document.querySelectorAll('.nav a').forEach(a=>{
+    a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open'));
+  });
+</script>
+</body>
+</html>

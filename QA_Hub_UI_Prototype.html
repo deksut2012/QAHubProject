@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SeniorSoft QA Hub - UI Prototype</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;--surface:#fff;--surface-2:#f8fafc;--line:#dfe6ef;
+      --text:#18212f;--muted:#667085;--primary:#2563eb;--primary-2:#1d4ed8;
+      --success:#16a34a;--warning:#d97706;--danger:#dc2626;--info:#0891b2;
+      --sidebar:#0f172a;--sidebar-2:#172033;--shadow:0 8px 24px rgba(15,23,42,.08);
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:"Segoe UI",Tahoma,sans-serif;background:var(--bg);color:var(--text)}
+    button,input,select,textarea{font:inherit}
+    .app{display:flex;min-height:100vh}
+    .sidebar{
+      width:260px;background:var(--sidebar);color:#fff;padding:18px 14px;position:fixed;
+      top:0;left:0;bottom:0;overflow-y:auto;z-index:20
+    }
+    .brand{display:flex;align-items:center;gap:12px;padding:8px 10px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+    .brand-logo{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#3b82f6,#22c55e);
+      display:grid;place-items:center;font-weight:800}
+    .brand h1{font-size:17px;margin:0}.brand small{color:#b8c2d6}
+    .nav-title{font-size:11px;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em;padding:18px 10px 8px}
+    .nav-item{
+      display:flex;align-items:center;gap:11px;padding:11px 12px;margin:4px 0;border-radius:10px;
+      color:#dbe4f0;cursor:pointer;transition:.18s
+    }
+    .nav-item:hover,.nav-item.active{background:#24314a;color:#fff}
+    .nav-item .icon{width:22px;text-align:center}
+    .badge-mini{margin-left:auto;background:#334155;color:#dbeafe;padding:2px 7px;border-radius:999px;font-size:11px}
+    .main{margin-left:260px;width:calc(100% - 260px)}
+    .topbar{
+      height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;
+      justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10
+    }
+    .top-left{display:flex;align-items:center;gap:14px}
+    .menu-btn{display:none;border:0;background:transparent;font-size:22px}
+    .search{width:360px;position:relative}
+    .search input{width:100%;padding:10px 14px 10px 38px;border:1px solid var(--line);border-radius:10px;background:#f8fafc}
+    .search span{position:absolute;left:13px;top:10px;color:var(--muted)}
+    .top-actions{display:flex;align-items:center;gap:12px}
+    .icon-btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 11px;cursor:pointer}
+    .avatar{width:38px;height:38px;border-radius:50%;background:#dbeafe;color:#1d4ed8;display:grid;place-items:center;font-weight:700}
+    .content{padding:24px}
+    .page{display:none}.page.active{display:block}
+    .page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .page-head h2{margin:0 0 5px;font-size:25px}.page-head p{margin:0;color:var(--muted)}
+    .actions{display:flex;gap:8px;flex-wrap:wrap}
+    .btn{border:1px solid var(--line);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    .btn.primary{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .btn.success{background:var(--success);color:#fff;border-color:var(--success)}
+    .btn.danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+    .grid{display:grid;gap:16px}.grid.cols-4{grid-template-columns:repeat(4,1fr)}.grid.cols-3{grid-template-columns:repeat(3,1fr)}.grid.cols-2{grid-template-columns:repeat(2,1fr)}
+    .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px}
+    .metric{display:flex;justify-content:space-between;align-items:flex-start}
+    .metric h3{margin:5px 0 2px;font-size:28px}.metric p{margin:0;color:var(--muted);font-size:13px}
+    .metric-icon{width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:21px}
+    .blue{background:#dbeafe;color:#1d4ed8}.green{background:#dcfce7;color:#15803d}.orange{background:#ffedd5;color:#c2410c}.red{background:#fee2e2;color:#b91c1c}
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .section-title h3{margin:0;font-size:17px}
+    .table-wrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+    table{width:100%;border-collapse:collapse;min-width:820px}
+    th,td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:middle}
+    th{background:#f8fafc;color:#475467;font-weight:700}
+    tr:last-child td{border-bottom:0}
+    .status{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;font-size:12px;font-weight:700}
+    .status.pass{background:#dcfce7;color:#15803d}.status.fail{background:#fee2e2;color:#b91c1c}
+    .status.progress{background:#dbeafe;color:#1d4ed8}.status.blocked{background:#fef3c7;color:#92400e}
+    .status.draft{background:#eef2f7;color:#475467}.status.ready{background:#cffafe;color:#0e7490}
+    .progress-bar{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden}.progress-fill{height:100%;background:var(--primary)}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+    .toolbar input,.toolbar select{border:1px solid var(--line);border-radius:9px;padding:9px 11px;background:#fff}
+    .toolbar input{min-width:240px}
+    .product-card{display:flex;gap:14px;align-items:flex-start}
+    .product-logo{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:#e0e7ff;color:#3730a3;font-weight:800}
+    .product-card h3{margin:0 0 3px}.product-card p{margin:0 0 10px;color:var(--muted);font-size:13px}
+    .tags{display:flex;gap:6px;flex-wrap:wrap}.tag{padding:4px 8px;border-radius:999px;background:#f1f5f9;color:#475569;font-size:11px}
+    .form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}
+    .field label{font-size:13px;font-weight:700;color:#344054}
+    .field input,.field select,.field textarea{border:1px solid var(--line);border-radius:9px;padding:10px;background:#fff}
+    .field textarea{min-height:90px;resize:vertical}
+    .step-list{display:flex;flex-direction:column;gap:10px}
+    .step{display:grid;grid-template-columns:50px 1fr 1fr 90px;gap:8px;align-items:start}
+    .step input,.step textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px}
+    .step textarea{min-height:70px}
+    .timeline{display:flex;gap:0;align-items:center;margin:18px 0;overflow:auto}
+    .timeline-step{min-width:145px;position:relative;text-align:center}
+    .timeline-step:before{content:"";position:absolute;left:-50%;right:50%;top:17px;height:3px;background:#d7deea}
+    .timeline-step:first-child:before{display:none}
+    .timeline-step.done:before,.timeline-step.active:before{background:var(--primary)}
+    .circle{width:34px;height:34px;border-radius:50%;margin:auto;background:#d7deea;display:grid;place-items:center;color:#fff;font-weight:700;position:relative;z-index:1}
+    .timeline-step.done .circle,.timeline-step.active .circle{background:var(--primary)}
+    .timeline-step span{display:block;margin-top:7px;font-size:12px;color:#475467}
+    .split{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+    .kanban{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;overflow:auto}
+    .kanban-col{background:#f8fafc;border:1px solid var(--line);border-radius:12px;padding:12px;min-width:220px}
+    .kanban-col h4{margin:0 0 10px}
+    .issue{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+    .issue b{font-size:13px}.issue p{font-size:12px;color:var(--muted);margin:6px 0}
+    .severity{font-size:11px;font-weight:700}.severity.high{color:#b91c1c}.severity.medium{color:#c2410c}
+    .tool-card{cursor:pointer;transition:.18s}.tool-card:hover{transform:translateY(-2px);border-color:#bfd0ff}
+    .ai-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.ai-tab{border:1px solid var(--line);background:#fff;padding:9px 13px;border-radius:10px;cursor:pointer;font-weight:700}.ai-tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+    .ai-panel{display:none}.ai-panel.active{display:block}.confidence{font-weight:800;color:var(--success)}
+    .ai-summary{border-left:4px solid var(--primary);background:#eff6ff;padding:12px 14px;border-radius:9px;margin-bottom:12px}.warning-box{border-left:4px solid var(--warning);background:#fffbeb;padding:12px 14px;border-radius:9px}
+    .empty{padding:34px;text-align:center;color:var(--muted)}
+    .drawer,.modal-backdrop{display:none}
+    .modal-backdrop.open{display:flex;position:fixed;inset:0;background:rgba(15,23,42,.55);align-items:center;justify-content:center;z-index:50;padding:18px}
+    .modal{background:#fff;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:16px;padding:20px}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+    .modal-head h3{margin:0}.close{border:0;background:transparent;font-size:22px;cursor:pointer}
+    .spec-box{background:#0f172a;color:#e2e8f0;padding:16px;border-radius:12px;font-family:Consolas,monospace;font-size:12px;white-space:pre-wrap}
+    .mobile-overlay{display:none}
+    @media(max-width:1100px){
+      .grid.cols-4{grid-template-columns:repeat(2,1fr)}.grid.cols-3{grid-template-columns:repeat(2,1fr)}
+      .split{grid-template-columns:1fr}.kanban{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:780px){
+      .sidebar{transform:translateX(-100%);transition:.2s}.sidebar.open{transform:translateX(0)}
+      .main{margin-left:0;width:100%}.menu-btn{display:block}.search{display:none}
+      .content{padding:14px}.grid.cols-4,.grid.cols-3,.grid.cols-2{grid-template-columns:1fr}
+      .page-head{flex-direction:column}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}
+      .step{grid-template-columns:1fr}.kanban{grid-template-columns:1fr}
+      .mobile-overlay.open{display:block;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:15}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-logo">QH</div>
+      <div><h1>SeniorSoft QA Hub</h1><small>TestOps Platform</small></div>
+    </div>
+
+    <div class="nav-title">Overview</div>
+    <div class="nav-item active" data-page="dashboard"><span class="icon">📊</span>Dashboard</div>
+    <div class="nav-item" data-page="products"><span class="icon">🧩</span>Products</div>
+    <div class="nav-item" data-page="requirements"><span class="icon">📋</span>Requirements<span class="badge-mini">12</span></div>
+
+    <div class="nav-title">Test Management</div>
+    <div class="nav-item" data-page="testcases"><span class="icon">🧪</span>Test Cases</div>
+    <div class="nav-item" data-page="cycles"><span class="icon">🔄</span>Test Cycles</div>
+    <div class="nav-item" data-page="execution"><span class="icon">▶️</span>Test Execution</div>
+    <div class="nav-item" data-page="bugs"><span class="icon">🐞</span>Bugs<span class="badge-mini">8</span></div>
+
+    <div class="nav-title">Release & Tools</div>
+    <div class="nav-item" data-page="release"><span class="icon">🚀</span>Build & Release</div>
+    <div class="nav-item" data-page="toolbox"><span class="icon">🧰</span>QA Toolbox</div>
+    <div class="nav-item" data-page="aiassistant"><span class="icon">✨</span>AI Test Assistant<span class="badge-mini">AI</span></div>
+    <div class="nav-item" data-page="spec"><span class="icon">📐</span>Developer Spec</div>
+  </aside>
+
+  <div class="mobile-overlay" id="overlay"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="top-left">
+        <button class="menu-btn" id="menuBtn">☰</button>
+        <div class="search"><span>🔎</span><input placeholder="ค้นหา Requirement, Test Case, Bug..." /></div>
+      </div>
+      <div class="top-actions">
+        <button class="icon-btn">🔔</button>
+        <div>
+          <div style="font-size:13px;font-weight:700">ปังปอนด์</div>
+          <div style="font-size:11px;color:var(--muted)">QA Lead</div>
+        </div>
+        <div class="avatar">ป</div>
+      </div>
+    </header>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="page active" id="dashboard">
+        <div class="page-head">
+          <div><h2>QA Dashboard</h2><p>ภาพรวมคุณภาพและสถานะการทดสอบทุกผลิตภัณฑ์</p></div>
+          <div class="actions"><button class="btn">Export Report</button><button class="btn primary" onclick="openModal('cycleModal')">+ สร้าง Test Cycle</button></div>
+        </div>
+
+        <div class="grid cols-4">
+          <div class="card metric"><div><p>งานที่กำลังทดสอบ</p><h3>18</h3><p>เพิ่มขึ้น 4 งานในสัปดาห์นี้</p></div><div class="metric-icon blue">🧪</div></div>
+          <div class="card metric"><div><p>Pass Rate</p><h3>92.4%</h3><p>จาก 486 Test Runs</p></div><div class="metric-icon green">✓</div></div>
+          <div class="card metric"><div><p>Bug Critical / High</p><h3>7</h3><p>ต้องดำเนินการก่อน Release</p></div><div class="metric-icon red">!</div></div>
+          <div class="card metric"><div><p>Release Readiness</p><h3>84%</h3><p>ProMaxx Build 10.4.29</p></div><div class="metric-icon orange">🚀</div></div>
+        </div>
+
+        <div class="grid cols-2" style="margin-top:16px">
+          <div class="card">
+            <div class="section-title"><h3>สถานะการทดสอบราย Product</h3><button class="btn">ดูทั้งหมด</button></div>
+            <div class="table-wrap">
+              <table>
+                <tr><th>Product</th><th>Progress</th><th>Pass</th><th>Fail</th><th>Risk</th></tr>
+                <tr><td><b>ProMaxx</b></td><td><div class="progress-bar"><div class="progress-fill" style="width:88%"></div></div><small>88%</small></td><td>214</td><td>14</td><td><span class="status blocked">Medium</span></td></tr>
+                <tr><td><b>MyMaxx2</b></td><td><div class="progress-bar"><div class="progress-fill" style="width:72%"></div></div><small>72%</small></td><td>128</td><td>9</td><td><span class="status fail">High</span></td></tr>
+                <tr><td><b>MyOrder</b></td><td><div class="progress-bar"><div class="progress-fill" style="width:95%"></div></div><small>95%</small></td><td>96</td><td>2</td><td><span class="status pass">Low</span></td></tr>
+              </table>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="section-title"><h3>งานเร่งด่วน</h3><button class="btn">ดู Backlog</button></div>
+            <div class="issue"><b>PMX-REQ-0241: ปรับการค้างจ่ายใน MyMaxx2</b><p>กำหนดส่ง: 20 ก.ค. 2026 • QA: Jirawat</p><span class="severity high">High Priority</span></div>
+            <div class="issue"><b>PMX-BUG-1182: ต้นทุน Lot คลาดเคลื่อน</b><p>รอ Build แก้ไขจาก Dev • Aging 3 วัน</p><span class="severity high">Critical</span></div>
+            <div class="issue"><b>INO-REQ-0044: ปรับ Responsive หน้า Queue</b><p>Test Case ยังไม่ครบ 3 เคส</p><span class="severity medium">Medium</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS -->
+      <section class="page" id="products">
+        <div class="page-head">
+          <div><h2>Products</h2><p>จัดการผลิตภัณฑ์และโมดูลที่อยู่ภายใต้การดูแลของ QA</p></div>
+          <button class="btn primary" onclick="openModal('productModal')">+ เพิ่ม Product</button>
+        </div>
+        <div class="toolbar"><input placeholder="ค้นหา Product..." /><select><option>ทุก Platform</option><option>Desktop</option><option>Web</option><option>Mobile</option></select><select><option>Active</option><option>Inactive</option></select></div>
+        <div class="grid cols-3">
+          <div class="card product-card"><div class="product-logo">PX</div><div><h3>ProMaxx</h3><p>Enterprise ERP / POS Desktop Application</p><div class="tags"><span class="tag">Desktop</span><span class="tag">Firebird</span><span class="tag">SQL Server</span></div></div></div>
+          <div class="card product-card"><div class="product-logo">MX</div><div><h3>MyMaxx2</h3><p>Web & Mobile Order Management</p><div class="tags"><span class="tag">Web</span><span class="tag">Mobile</span><span class="tag">API</span></div></div></div>
+          <div class="card product-card"><div class="product-logo">MO</div><div><h3>MyOrder</h3><p>Customer Ordering Platform</p><div class="tags"><span class="tag">Web</span><span class="tag">Responsive</span></div></div></div>
+          <div class="card product-card"><div class="product-logo">CH</div><div><h3>Chocco2</h3><p>Retail & Membership Platform</p><div class="tags"><span class="tag">Web</span><span class="tag">API</span></div></div></div>
+          <div class="card product-card"><div class="product-logo">GF</div><div><h3>Giftory</h3><p>Gift Card & Promotion Platform</p><div class="tags"><span class="tag">Web</span><span class="tag">Payment</span></div></div></div>
+          <div class="card product-card"><div class="product-logo">IN</div><div><h3>inLine</h3><p>Queue Management System</p><div class="tags"><span class="tag">Mobile</span><span class="tag">Realtime</span></div></div></div>
+        </div>
+      </section>
+
+      <!-- REQUIREMENTS -->
+      <section class="page" id="requirements">
+        <div class="page-head">
+          <div><h2>Requirements</h2><p>ติดตาม Feature, Bug Fix, Change Request และ Customer Case</p></div>
+          <button class="btn primary" onclick="openModal('requirementModal')">+ สร้าง Requirement</button>
+        </div>
+        <div class="toolbar">
+          <input placeholder="ค้นหาเลขงานหรือชื่อ Requirement..." />
+          <select><option>ทุก Product</option><option>ProMaxx</option><option>MyMaxx2</option></select>
+          <select><option>ทุก Status</option><option>Ready for QA</option><option>Testing</option><option>Waiting Fix</option></select>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>ID</th><th>Requirement</th><th>Product</th><th>Type</th><th>Owner</th><th>Status</th><th>Due Date</th></tr>
+            <tr><td>REQ-0241</td><td><b>รองรับการค้างจ่ายใน MyMaxx2</b><br><small>Acceptance Criteria 5 ข้อ</small></td><td>MyMaxx2</td><td>Feature</td><td>Jirawat</td><td><span class="status progress">Testing</span></td><td>20/07/2026</td></tr>
+            <tr><td>REQ-0238</td><td><b>บังคับ Lot No สำหรับสินค้าประเภทยา</b></td><td>ProMaxx</td><td>Enhancement</td><td>Pond</td><td><span class="status ready">Ready for QA</span></td><td>22/07/2026</td></tr>
+            <tr><td>REQ-0229</td><td><b>ปรับ Responsive หน้า MyOrder</b></td><td>MyOrder</td><td>Change Request</td><td>Natt</td><td><span class="status draft">Draft</span></td><td>28/07/2026</td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- TEST CASES -->
+      <section class="page" id="testcases">
+        <div class="page-head">
+          <div><h2>Test Cases</h2><p>คลัง Test Case กลาง รองรับ Version, Clone และ Template</p></div>
+          <div class="actions"><button class="btn">Import Excel</button><button class="btn primary" onclick="openModal('testcaseModal')">+ สร้าง Test Case</button></div>
+        </div>
+        <div class="toolbar"><input placeholder="ค้นหา Test Case..." /><select><option>ทุก Product</option></select><select><option>ทุก Test Type</option><option>Functional</option><option>Regression</option><option>API</option></select></div>
+        <div class="table-wrap">
+          <table>
+            <tr><th>Test Case ID</th><th>Title</th><th>Product / Module</th><th>Priority</th><th>Type</th><th>Version</th><th>Status</th></tr>
+            <tr><td>TC-PMX-STK-001</td><td><b>รับสินค้าก่อนขายและตรวจสอบต้นทุน</b></td><td>ProMaxx / Stock</td><td>High</td><td>Regression</td><td>v1.3</td><td><span class="status pass">Approved</span></td></tr>
+            <tr><td>TC-MXM-PAY-014</td><td><b>ชำระเงินหลายรูปแบบพร้อมกัน</b></td><td>MyMaxx2 / Payment</td><td>High</td><td>Functional</td><td>v1.1</td><td><span class="status progress">Review</span></td></tr>
+            <tr><td>TC-INL-QUE-008</td><td><b>แสดงลำดับคิวแบบ Realtime</b></td><td>inLine / Queue</td><td>Medium</td><td>Integration</td><td>v1.0</td><td><span class="status draft">Draft</span></td></tr>
+          </table>
+        </div>
+      </section>
+
+      <!-- CYCLES -->
+      <section class="page" id="cycles">
+        <div class="page-head">
+          <div><h2>Test Cycles</h2><p>จัดชุดทดสอบตาม Build, Release และ Environment</p></div>
+          <button class="btn primary" onclick="openModal('cycleModal')">+ สร้าง Test Cycle</button>
+        </div>
+        <div class="grid cols-3">
+          <div class="card"><div class="section-title"><h3>ProMaxx 10.4.29 Regression</h3><span class="status progress">In Progress</span></div><p style="color:var(--muted)">QA Environment • 260 Test Cases</p><div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div><p><b>78%</b> Complete</p></div>
+          <div class="card"><div class="section-title"><h3>MyMaxx2 Payment UAT</h3><span class="status blocked">Blocked</span></div><p style="color:var(--muted)">UAT Environment • 72 Test Cases</p><div class="progress-bar"><div class="progress-fill" style="width:56%"></div></div><p><b>56%</b> Complete</p></div>
+          <div class="card"><div class="section-title"><h3>MyOrder Smoke Test</h3><span class="status pass">Completed</span></div><p style="color:var(--muted)">Production Candidate • 38 Test Cases</p><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div><p><b>100%</b> Complete</p></div>
+        </div>
+      </section>
+
+      <!-- EXECUTION -->
+      <section class="page" id="execution">
+        <div class="page-head"><div><h2>Test Execution</h2><p>หน้าจอสำหรับ Run Test และบันทึก Evidence</p></div><button class="btn">ดู Test Cycle</button></div>
+        <div class="split">
+          <div class="card">
+            <div class="section-title"><h3>TC-PMX-STK-001</h3><span class="status progress">In Progress</span></div>
+            <h3>รับสินค้าก่อนขายและตรวจสอบต้นทุน</h3>
+            <p><b>Precondition:</b> มีสินค้า ITEM001 และเปิดใช้งาน Lot</p>
+            <div class="timeline">
+              <div class="timeline-step done"><div class="circle">1</div><span>เตรียมข้อมูล</span></div>
+              <div class="timeline-step active"><div class="circle">2</div><span>รับสินค้า</span></div>
+              <div class="timeline-step"><div class="circle">3</div><span>ขายสินค้า</span></div>
+              <div class="timeline-step"><div class="circle">4</div><span>ตรวจรายงาน</span></div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <tr><th>Step</th><th>Action</th><th>Expected Result</th><th>Result</th></tr>
+                <tr><td>1</td><td>สร้างใบรับสินค้า ITEM001 จำนวน 10</td><td>บันทึกสำเร็จและ Lot ถูกสร้าง</td><td><span class="status pass">Pass</span></td></tr>
+                <tr><td>2</td><td>ขาย ITEM001 จำนวน 2</td><td>ตัด Stock และ Lot ถูกต้อง</td><td><span class="status progress">Running</span></td></tr>
+                <tr><td>3</td><td>เปิดรายงานต้นทุน</td><td>ต้นทุนตรงกับ Lot</td><td><span class="status draft">Not Run</span></td></tr>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <h3>บันทึกผลการทดสอบ</h3>
+            <div class="field"><label>Result</label><select><option>Passed</option><option>Failed</option><option>Blocked</option><option>Skipped</option></select></div>
+            <div class="field" style="margin-top:12px"><label>Actual Result</label><textarea placeholder="ระบุผลที่เกิดขึ้นจริง..."></textarea></div>
+            <div class="field" style="margin-top:12px"><label>Evidence</label><input type="file" /></div>
+            <div class="field" style="margin-top:12px"><label>Execution Note</label><textarea placeholder="หมายเหตุเพิ่มเติม..."></textarea></div>
+            <div class="actions" style="margin-top:14px"><button class="btn">บันทึก Draft</button><button class="btn success">บันทึกผล</button><button class="btn danger">สร้าง Bug</button></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUGS -->
+      <section class="page" id="bugs">
+        <div class="page-head"><div><h2>Bug Management</h2><p>ติดตาม Bug ตั้งแต่ New จนถึง Closed และ Retest</p></div><button class="btn primary">+ สร้าง Bug</button></div>
+        <div class="kanban">
+          <div class="kanban-col"><h4>New <span class="badge-mini">3</span></h4>
+            <div class="issue"><b>BUG-1182 ต้นทุน Lot คลาดเคลื่อน</b><p>ProMaxx • Stock</p><span class="severity high">Critical</span></div>
+            <div class="issue"><b>BUG-1183 QR Payment ไม่แสดง</b><p>MyMaxx2 • Payment</p><span class="severity high">High</span></div>
+          </div>
+          <div class="kanban-col"><h4>In Progress <span class="badge-mini">2</span></h4>
+            <div class="issue"><b>BUG-1178 Stock ติดลบหลัง Sync</b><p>Dev: Somchai</p><span class="severity high">High</span></div>
+          </div>
+          <div class="kanban-col"><h4>Ready for Retest <span class="badge-mini">2</span></h4>
+            <div class="issue"><b>BUG-1169 Permission แก้ราคา</b><p>Fix Build: 10.4.29.0850</p><span class="severity medium">Medium</span></div>
+          </div>
+          <div class="kanban-col"><h4>Closed <span class="badge-mini">14</span></h4>
+            <div class="issue"><b>BUG-1155 API Timeout</b><p>Retest Passed</p><span class="severity medium">Medium</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RELEASE -->
+      <section class="page" id="release">
+        <div class="page-head"><div><h2>Build & Release</h2><p>จัดการ Build, Environment, Quality Gate และ QA Sign-off</p></div><button class="btn primary">+ สร้าง Release</button></div>
+        <div class="grid cols-2">
+          <div class="card">
+            <div class="section-title"><h3>ProMaxx Build 10.4.29.0850</h3><span class="status blocked">Conditional</span></div>
+            <p>Target Release: 25/07/2026</p>
+            <table>
+              <tr><td>Smoke Test</td><td><span class="status pass">Passed</span></td></tr>
+              <tr><td>Regression Pass Rate</td><td>94.6%</td></tr>
+              <tr><td>Critical Bug</td><td><span class="status fail">1 Open</span></td></tr>
+              <tr><td>High Bug</td><td><span class="status blocked">3 Open</span></td></tr>
+              <tr><td>Requirement Coverage</td><td>100%</td></tr>
+            </table>
+            <button class="btn danger">ยัง Sign-off ไม่ได้</button>
+          </div>
+          <div class="card">
+            <h3>Release Checklist</h3>
+            <ul class="checklist">
+              <li>Release Note ครบ</li><li>Database Script ผ่าน Review</li><li>Backup Plan พร้อม</li>
+              <li>Rollback Plan พร้อม</li><li>Critical Bug = 0</li><li>QA Lead Sign-off</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- TOOLBOX -->
+      <section class="page" id="toolbox">
+        <div class="page-head"><div><h2>QA Toolbox</h2><p>รวมเครื่องมือที่ QA ใช้เป็นประจำไว้ในระบบเดียว</p></div></div>
+        <div class="grid cols-3">
+          <div class="card tool-card"><div class="metric-icon blue">🗄️</div><h3>SQL Query Library</h3><p>เก็บ Script, Parameter, Preview และ Audit Execution</p></div>
+          <div class="card tool-card"><div class="metric-icon green">🌐</div><h3>API Tester</h3><p>GET, POST, PUT, DELETE, Header, Auth และ Response Validation</p></div>
+          <div class="card tool-card"><div class="metric-icon orange">🧮</div><h3>Data Generator</h3><p>สร้างข้อมูลบุคคล สินค้า Barcode JSON CSV และ SQL Insert</p></div>
+          <div class="card tool-card"><div class="metric-icon blue">🔍</div><h3>File Compare</h3><p>เปรียบเทียบ CSV, Excel, JSON, Text และ Duplicate</p></div>
+          <div class="card tool-card"><div class="metric-icon green">▦</div><h3>QR / Barcode</h3><p>Generate, Decode, PromptPay Payload และ CRC Validation</p></div>
+          <div class="card tool-card"><div class="metric-icon red">📄</div><h3>Log Analyzer</h3><p>ค้นหา Error, Group Exception, Timeline และสร้าง Bug Draft</p></div>
+        </div>
+      </section>
+
+
+      <!-- AI TEST ASSISTANT -->
+      <section class="page" id="aiassistant">
+        <div class="page-head">
+          <div><h2>AI Test Assistant</h2><p>วิเคราะห์ Requirement หรือ Error แล้วสร้าง Test Case และ Bug Draft เพื่อให้ QA ตรวจสอบ</p></div>
+          <div class="actions"><button class="btn">AI History</button><button class="btn primary">+ New Analysis</button></div>
+        </div>
+
+        <div class="ai-tabs">
+          <button class="ai-tab active" data-ai-panel="requirement-ai">Requirement → Test Case</button>
+          <button class="ai-tab" data-ai-panel="markdown-ai">Markdown → Test Case</button>
+          <button class="ai-tab" data-ai-panel="error-ai">Error → Bug & Regression</button>
+          <button class="ai-tab" data-ai-panel="review-ai">Pending Review</button>
+        </div>
+
+        <div class="ai-panel active" id="requirement-ai">
+          <div class="split">
+            <div class="card">
+              <h3>ข้อมูลสำหรับวิเคราะห์ Requirement</h3>
+              <div class="form-grid">
+                <div class="field"><label>Product</label><select><option>ProMaxx</option><option>MyMaxx2</option><option>MyOrder</option></select></div>
+                <div class="field"><label>Module</label><select><option>Stock / Lot</option><option>Sale</option><option>Payment</option></select></div>
+                <div class="field full"><label>Requirement Source</label><select><option>REQ-0238 — บังคับ Lot No สำหรับสินค้าประเภทยา</option><option>วาง Requirement ใหม่</option></select></div>
+                <div class="field full"><label>Requirement</label><textarea>ระบบต้องไม่อนุญาตให้ขายสินค้าประเภทยา หากไม่ได้ระบุ Lot No และต้องตรวจสอบจำนวนคงเหลือของ Lot ก่อนบันทึกการขาย</textarea></div>
+                <div class="field full"><label>Acceptance Criteria</label><textarea>- สินค้าประเภทยาต้องระบุ Lot No
+- Lot ต้องมีอยู่จริงและมีจำนวนเพียงพอ
+- สินค้าทั่วไปยังขายได้ตาม Flow เดิม
+- Stock และต้นทุนหลังขายต้องถูกต้อง</textarea></div>
+                <div class="field"><label>Test Depth</label><select><option>Comprehensive</option><option>Standard</option><option>Smoke</option></select></div>
+                <div class="field"><label>Generate</label><select><option>Positive + Negative + Boundary + Regression</option><option>Functional Only</option></select></div>
+              </div>
+              <div class="warning-box" style="margin-top:14px"><b>Data Protection:</b> ระบบจะ Mask Password, Token และข้อมูลส่วนบุคคลก่อนส่งให้ AI</div>
+              <div class="actions" style="margin-top:14px;justify-content:flex-end"><button class="btn">Clear</button><button class="btn primary" onclick="simulateGenerate()">✨ Generate Test Cases</button></div>
+            </div>
+
+            <div class="card">
+              <div class="section-title"><h3>AI Analysis Summary</h3><span class="status ready">AI Draft</span></div>
+              <div class="ai-summary"><b>Business Rules Detected: 4</b><br><small>Lot Required, Lot Validation, Stock Validation, Cost Integrity</small></div>
+              <table>
+                <tr><td>Risk Level</td><td><span class="status fail">High</span></td></tr>
+                <tr><td>Generated Scenarios</td><td><b>7</b></td></tr>
+                <tr><td>Generated Test Cases</td><td><b id="generatedCount">18</b></td></tr>
+                <tr><td>Coverage Warning</td><td><span class="status blocked">2 Items</span></td></tr>
+                <tr><td>Confidence</td><td><span class="confidence">93%</span></td></tr>
+              </table>
+              <h4>AI Assumptions</h4>
+              <ul><li>Lot ถูกเลือกในหน้าขายก่อนบันทึก</li><li>ต้นทุนอ้างอิงตาม Lot ที่ตัดจริง</li><li>ผู้ใช้มีสิทธิ์ขายสินค้าประเภทยา</li></ul>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="section-title"><h3>Generated Test Cases</h3><div class="actions"><button class="btn">Regenerate</button><button class="btn success">ส่ง QA Lead Review</button></div></div>
+            <div class="table-wrap">
+              <table>
+                <tr><th>เลือก</th><th>Test Case</th><th>Type</th><th>Priority</th><th>Confidence</th><th>Status</th></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>ขายสินค้าประเภทยาโดยระบุ Lot ที่มีจำนวนเพียงพอ</b><br><small>ตรวจ Stock และต้นทุนหลังบันทึก</small></td><td>Positive</td><td>High</td><td>96%</td><td><span class="status draft">AI Draft</span></td></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>ขายสินค้าประเภทยาโดยไม่ระบุ Lot No</b><br><small>ระบบต้อง Block และแสดงข้อความที่เข้าใจได้</small></td><td>Negative</td><td>Critical</td><td>98%</td><td><span class="status draft">AI Draft</span></td></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>เลือก Lot ที่มีจำนวนคงเหลือน้อยกว่าจำนวนขาย</b></td><td>Boundary</td><td>High</td><td>94%</td><td><span class="status draft">AI Draft</span></td></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>ขายสินค้าทั่วไปที่ไม่ได้บังคับ Lot</b><br><small>ตรวจว่า Flow เดิมไม่ถูกกระทบ</small></td><td>Regression</td><td>High</td><td>91%</td><td><span class="status draft">AI Draft</span></td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="ai-panel" id="markdown-ai">
+          <div class="split">
+            <div class="card">
+              <h3>Document Source</h3>
+              <div class="form-grid">
+                <div class="field"><label>Source Type</label><select><option>Git Repository</option><option>Upload Markdown</option><option>Document Library</option></select></div>
+                <div class="field"><label>Product</label><select><option>ProMaxx</option><option>MyMaxx2</option><option>MyOrder</option></select></div>
+                <div class="field full"><label>Repository</label><select><option>seniorsoft/promaxx-docs</option><option>seniorsoft/mymaxx2-docs</option></select></div>
+                <div class="field"><label>Branch</label><select><option>main</option><option>develop</option><option>release/10.4.29</option></select></div>
+                <div class="field"><label>Commit / Version</label><input value="a84fc12" /></div>
+                <div class="field full"><label>Folder / File</label><select><option>docs/stock/stock-transfer.md</option><option>docs/stock/lot-control.md</option><option>เลือกทั้ง Folder: docs/stock</option></select></div>
+                <div class="field full"><label>Upload .md</label><input type="file" accept=".md,text/markdown" /></div>
+                <div class="field"><label>Test Depth</label><select><option>Comprehensive</option><option>Standard</option><option>Smoke</option></select></div>
+                <div class="field"><label>Change Mode</label><select><option>Analyze Current Version</option><option>Compare with Previous Commit</option></select></div>
+              </div>
+              <div class="warning-box" style="margin-top:14px"><b>Source Control:</b> Test Case ทุกเคสจะบันทึก File Path, Section, Branch และ Commit Hash เพื่อ Trace กลับเอกสารต้นทางได้</div>
+              <div class="actions" style="margin-top:14px;justify-content:flex-end"><button class="btn">Preview Markdown</button><button class="btn primary">📘 Analyze Documentation</button></div>
+            </div>
+
+            <div class="card">
+              <div class="section-title"><h3>Document Analysis</h3><span class="status ready">Parsed</span></div>
+              <div class="ai-summary"><b>docs/stock/stock-transfer.md</b><br><small>Branch: release/10.4.29 • Commit: a84fc12</small></div>
+              <table>
+                <tr><td>Modules Detected</td><td><b>Stock Transfer, Lot</b></td></tr>
+                <tr><td>Business Rules</td><td><b>8</b></td></tr>
+                <tr><td>Validation Rules</td><td><b>6</b></td></tr>
+                <tr><td>Dependencies</td><td><b>4</b></td></tr>
+                <tr><td>Missing Information</td><td><span class="status blocked">2 Items</span></td></tr>
+                <tr><td>Document Confidence</td><td><span class="confidence">95%</span></td></tr>
+              </table>
+              <h4>Detected Sections</h4>
+              <div class="tags"><span class="tag">Objective</span><span class="tag">Preconditions</span><span class="tag">Business Rules</span><span class="tag">Flow</span><span class="tag">Validation</span><span class="tag">Expected Result</span></div>
+              <h4>Missing / Conflict</h4>
+              <ul><li>ยังไม่ระบุพฤติกรรมเมื่อ API ปลายทาง Timeout</li><li>Business Rule เรื่องต้นทุนขัดกับเอกสาร Version ก่อนหน้า</li></ul>
+            </div>
+          </div>
+
+          <div class="grid cols-2" style="margin-top:16px">
+            <div class="card">
+              <div class="section-title"><h3>Change Impact</h3><span class="status progress">Diff Detected</span></div>
+              <p><b>Previous:</b> commit 72be901</p>
+              <ul>
+                <li><b>Added:</b> สินค้าประเภทยาต้องระบุ Lot No.</li>
+                <li><b>Modified:</b> ห้ามโอนเกิน Stock คงเหลือรวม → ตรวจตาม Lot</li>
+                <li><b>Removed:</b> อนุญาตให้บันทึก Draft โดยไม่ตรวจ Stock</li>
+              </ul>
+              <p><b>Impacted Test Cases:</b> 6 เคส</p>
+              <p><b>Suggested New Tests:</b> 4 เคส</p>
+              <button class="btn">ดู Document Diff</button>
+            </div>
+            <div class="card">
+              <div class="section-title"><h3>Traceability Preview</h3><span class="status pass">Linked</span></div>
+              <p><b>Test Case:</b> โอนสินค้าประเภทยาโดยไม่ระบุ Lot</p>
+              <div class="spec-box">Source: docs/stock/stock-transfer.md
+Section: Business Rules
+Lines: 18–24
+Branch: release/10.4.29
+Commit: a84fc12
+Generated By: AI Documentation Analyzer
+Confidence: 97%</div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <div class="section-title"><h3>Generated Test Cases from Markdown</h3><div class="actions"><button class="btn">Regenerate</button><button class="btn success">ส่ง QA Review</button></div></div>
+            <div class="table-wrap">
+              <table>
+                <tr><th>เลือก</th><th>Test Case</th><th>Source Reference</th><th>Type</th><th>Impact</th><th>Confidence</th></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>โอนสินค้าระหว่างสาขาสำเร็จ</b><br><small>ตรวจ Stock ต้นทาง ปลายทาง และประวัติ</small></td><td>Flow §1–5</td><td>Positive</td><td>Existing</td><td>96%</td></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>โอนจำนวนมากกว่า Stock ของ Lot</b></td><td>Validation L31–36</td><td>Negative</td><td>Updated</td><td>98%</td></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>โอนสินค้าประเภทยาโดยไม่ระบุ Lot No.</b></td><td>Business Rules L18–24</td><td>Negative</td><td>New</td><td>97%</td></tr>
+                <tr><td><input type="checkbox" checked></td><td><b>ตรวจต้นทุนปลายทางอ้างอิง Lot ต้นทาง</b></td><td>Expected Result L42–48</td><td>Integration</td><td>Updated</td><td>92%</td></tr>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="ai-panel" id="error-ai">
+          <div class="split">
+            <div class="card">
+              <h3>Error / Log Input</h3>
+              <div class="form-grid">
+                <div class="field"><label>Product</label><select><option>ProMaxx</option><option>MyMaxx2</option></select></div>
+                <div class="field"><label>Input Type</label><select><option>SQL Error</option><option>Application Log</option><option>API Response</option><option>Screenshot</option></select></div>
+                <div class="field"><label>Build</label><input value="10.4.29.0850" /></div>
+                <div class="field"><label>Environment</label><select><option>QA</option><option>UAT</option><option>Production</option></select></div>
+                <div class="field full"><label>Error Message / Stack Trace</label><textarea>Violation of PRIMARY KEY constraint 'XPKEMAILONTIME'. Cannot insert duplicate key in object 'dbo.EMAILONTIME'. The duplicate key value is (0, 1).</textarea></div>
+                <div class="field full"><label>Attachment</label><input type="file" /></div>
+              </div>
+              <div class="actions" style="margin-top:14px;justify-content:flex-end"><button class="btn primary">🔍 Analyze Error</button></div>
+            </div>
+            <div class="card">
+              <div class="section-title"><h3>Error Analysis</h3><span class="status ready">AI Draft</span></div>
+              <div class="ai-summary"><b>Duplicate Primary Key</b><br><small>Table: EMAILONTIME • Key: SYSBRANCHID=0, TIMENO=1</small></div>
+              <h4>Possible Root Causes</h4>
+              <ol><li>Script Insert ข้อมูลที่มีอยู่แล้ว</li><li>ไม่มีการตรวจ IF NOT EXISTS</li><li>Import หรือ Migration ถูก Execute ซ้ำ</li></ol>
+              <h4>Recommended Checks</h4>
+              <ul><li>Query Key เดิมก่อน Insert</li><li>ตรวจ Primary Key Definition</li><li>ตรวจ Transaction และ Rollback</li></ul>
+              <p><b>Confidence:</b> <span class="confidence">97%</span></p>
+            </div>
+          </div>
+          <div class="grid cols-2" style="margin-top:16px">
+            <div class="card"><div class="section-title"><h3>Generated Bug Draft</h3><button class="btn">Edit</button></div><p><b>Title:</b> ระบบ Insert EMAILONTIME ซ้ำแล้วเกิด Primary Key Error</p><p><b>Steps:</b> Execute Script ที่มี Key (0,1) ในฐานข้อมูลที่มีข้อมูลเดิม</p><p><b>Expected:</b> ระบบข้ามข้อมูลซ้ำหรือแจ้งเตือนก่อน Execute</p><p><b>Actual:</b> Statement ถูกยกเลิกด้วย Error 2627</p><button class="btn primary">บันทึกเป็น Bug Draft</button></div>
+            <div class="card"><div class="section-title"><h3>Generated Regression Tests</h3><button class="btn">ดูทั้งหมด</button></div><ul><li>Insert Key ใหม่ต้องสำเร็จ</li><li>Insert Key เดิมซ้ำต้องไม่ทำให้ข้อมูลเสียหาย</li><li>Execute Script ซ้ำครั้งที่สอง</li><li>ตรวจ Rollback เมื่อบางรายการซ้ำ</li><li>ทดสอบ SYSBRANCHID ต่างกัน</li></ul><button class="btn success">สร้าง Test Case Draft</button></div>
+          </div>
+        </div>
+
+        <div class="ai-panel" id="review-ai">
+          <div class="card">
+            <div class="section-title"><h3>AI Draft ที่รอตรวจสอบ</h3><button class="btn">Filter</button></div>
+            <div class="table-wrap"><table>
+              <tr><th>Draft ID</th><th>Source</th><th>Product</th><th>ผลลัพธ์</th><th>Confidence</th><th>Reviewer</th><th>Status</th></tr>
+              <tr><td>AI-00042</td><td>REQ-0238</td><td>ProMaxx</td><td>18 Test Cases</td><td>93%</td><td>Pond</td><td><span class="status progress">Pending Review</span></td></tr>
+              <tr><td>AI-00041</td><td>SQL Error 2627</td><td>ProMaxx</td><td>1 Bug + 5 Tests</td><td>97%</td><td>Jirawat</td><td><span class="status blocked">Needs Revision</span></td></tr>
+              <tr><td>AI-00039</td><td>REQ-0241</td><td>MyMaxx2</td><td>12 Test Cases</td><td>89%</td><td>Pond</td><td><span class="status pass">Approved</span></td></tr>
+            </table></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SPEC -->
+      <section class="page" id="spec">
+        <div class="page-head"><div><h2>Developer / AI Handoff Spec</h2><p>คำอธิบายเพื่อใช้ส่งต่อให้ AI หรือทีม Dev พัฒนาระบบจริง</p></div></div>
+        <div class="card">
+          <h3>Frontend Structure</h3>
+          <div class="spec-box">Recommended routes:
+/
+├── /dashboard
+├── /products
+├── /products/:id/modules
+├── /requirements
+├── /requirements/:id
+├── /test-cases
+├── /test-cases/:id
+├── /test-cycles
+├── /test-cycles/:id
+├── /execution/:runId
+├── /bugs
+├── /bugs/:id
+├── /releases
+├── /toolbox
+├── /ai-assistant
+├── /ai-assistant/documentation
+├── /ai-assistant/documentation/:analysisId
+├── /ai-assistant/review/:draftId
+└── /settings</div>
+          <h3>Component Suggestions</h3>
+          <div class="spec-box">AppShell
+├── Sidebar
+├── Topbar
+├── GlobalSearch
+├── NotificationCenter
+└── UserMenu
+
+Reusable Components
+├── DataTable
+├── FilterBar
+├── StatusBadge
+├── ProductSelector
+├── AttachmentUploader
+├── AuditTimeline
+├── ConfirmDialog
+├── TestStepEditor
+├── ResultSelector
+└── PermissionGuard</div>
+          <h3>Core Entities</h3>
+          <div class="spec-box">Product, ProductModule, Requirement, TestScenario,
+TestCase, TestCaseStep, TestCaseVersion,
+TestCycle, TestRun, TestRunResult,
+Bug, Build, Environment, Release,
+DocumentSource, DocumentFile, DocumentVersion,
+DocumentSection, DocumentDiff, TestCaseSourceLink,
+Attachment, Comment, AuditLog, User, Role,
+AIAnalysis, AIGeneratedDraft, AIReview, PromptAudit</div>
+          <h3>UX Rules</h3>
+          <ul>
+            <li>Fail Result ต้องบังคับกรอก Actual Result และ Evidence</li>
+            <li>ทุกหน้าต้อง Filter ตาม Product, Module, Status และ Owner ได้</li>
+            <li>รายการจำนวนมากต้องรองรับ Pagination และ Saved View</li>
+            <li>สถานะสำคัญต้องใช้สีสม่ำเสมอทุกหน้า</li>
+            <li>หน้าจอ Execution ต้องใช้งานบน Laptop ได้สะดวกที่สุด</li>
+            <li>AI Output ต้องเป็น Draft และผ่าน Human Review ก่อน Publish</li>
+            <li>แสดง Confidence, Assumption และ Missing Information ทุกครั้ง</li>
+            <li>Mask Password, Token และ PII ก่อนส่งข้อมูลให้ AI</li>
+            <li>มือถือใช้สำหรับดู Dashboard, Bug และ Approval เป็นหลัก</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<!-- MODALS -->
+<div class="modal-backdrop" id="productModal">
+  <div class="modal">
+    <div class="modal-head"><h3>เพิ่ม Product</h3><button class="close" onclick="closeModal('productModal')">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Product Code</label><input placeholder="PMX" /></div>
+      <div class="field"><label>Product Name</label><input placeholder="ProMaxx" /></div>
+      <div class="field"><label>Platform</label><select><option>Desktop</option><option>Web</option><option>Mobile</option></select></div>
+      <div class="field"><label>Status</label><select><option>Active</option><option>Inactive</option></select></div>
+      <div class="field full"><label>Description</label><textarea></textarea></div>
+    </div>
+    <div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal('productModal')">ยกเลิก</button><button class="btn primary">บันทึก</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="requirementModal">
+  <div class="modal">
+    <div class="modal-head"><h3>สร้าง Requirement</h3><button class="close" onclick="closeModal('requirementModal')">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Product</label><select><option>ProMaxx</option><option>MyMaxx2</option></select></div>
+      <div class="field"><label>Type</label><select><option>Feature</option><option>Bug Fix</option><option>Change Request</option></select></div>
+      <div class="field full"><label>Title</label><input placeholder="ชื่อ Requirement" /></div>
+      <div class="field full"><label>Description</label><textarea></textarea></div>
+      <div class="field full"><label>Acceptance Criteria</label><textarea placeholder="- ระบบต้อง...\n- ผู้ใช้สามารถ..."></textarea></div>
+      <div class="field"><label>Priority</label><select><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="field"><label>Due Date</label><input type="date" /></div>
+    </div>
+    <div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal('requirementModal')">ยกเลิก</button><button class="btn primary">บันทึก Requirement</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="testcaseModal">
+  <div class="modal">
+    <div class="modal-head"><h3>สร้าง Test Case</h3><button class="close" onclick="closeModal('testcaseModal')">×</button></div>
+    <div class="form-grid">
+      <div class="field"><label>Product</label><select><option>ProMaxx</option><option>MyMaxx2</option></select></div>
+      <div class="field"><label>Module</label><select><option>Stock</option><option>Sale</option><option>Payment</option></select></div>
+      <div class="field full"><label>Title</label><input placeholder="ชื่อ Test Case" /></div>
+      <div class="field"><label>Priority</label><select><option>High</option><option>Medium</option><option>Low</option></select></div>
+      <div class="field"><label>Test Type</label><select><option>Functional</option><option>Regression</option><option>API</option></select></div>
+      <div class="field full"><label>Precondition</label><textarea></textarea></div>
+    </div>
+    <h4>Test Steps</h4>
+    <div class="step-list">
+      <div class="step"><input value="1" /><textarea placeholder="Action"></textarea><textarea placeholder="Expected Result"></textarea><button class="btn danger">ลบ</button></div>
+      <div class="step"><input value="2" /><textarea placeholder="Action"></textarea><textarea placeholder="Expected Result"></textarea><button class="btn danger">ลบ</button></div>
+    </div>
+    <button class="btn" style="margin-top:10px">+ เพิ่ม Step</button>
+    <div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal('testcaseModal')">ยกเลิก</button><button class="btn primary">บันทึก Test Case</button></div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="cycleModal">
+  <div class="modal">
+    <div class="modal-head"><h3>สร้าง Test Cycle</h3><button class="close" onclick="closeModal('cycleModal')">×</button></div>
+    <div class="form-grid">
+      <div class="field full"><label>Cycle Name</label><input placeholder="ProMaxx Build 10.4.29 Regression" /></div>
+      <div class="field"><label>Product</label><select><option>ProMaxx</option><option>MyMaxx2</option></select></div>
+      <div class="field"><label>Environment</label><select><option>QA</option><option>UAT</option><option>Pre-Production</option></select></div>
+      <div class="field"><label>Build</label><input placeholder="10.4.29.0850" /></div>
+      <div class="field"><label>Owner</label><select><option>Pond</option><option>Jirawat</option></select></div>
+      <div class="field full"><label>Description</label><textarea></textarea></div>
+    </div>
+    <div class="actions" style="justify-content:flex-end;margin-top:16px"><button class="btn" onclick="closeModal('cycleModal')">ยกเลิก</button><button class="btn primary">สร้าง Test Cycle</button></div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.ai-tab').forEach(tab=>{
+    tab.addEventListener('click',()=>{
+      document.querySelectorAll('.ai-tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.ai-panel').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById(tab.dataset.aiPanel).classList.add('active');
+    });
+  });
+
+  function simulateGenerate(){
+    const count=document.getElementById('generatedCount');
+    if(count){count.textContent='18';}
+    alert('AI สร้าง Test Case Draft แล้ว 18 รายการ กรุณาตรวจสอบก่อนส่ง Review');
+  }
+
+  const navItems = document.querySelectorAll('.nav-item');
+  const pages = document.querySelectorAll('.page');
+  navItems.forEach(item=>{
+    item.addEventListener('click',()=>{
+      navItems.forEach(n=>n.classList.remove('active'));
+      pages.forEach(p=>p.classList.remove('active'));
+      item.classList.add('active');
+      document.getElementById(item.dataset.page).classList.add('active');
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('open');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+
+  function openModal(id){document.getElementById(id).classList.add('open')}
+  function closeModal(id){document.getElementById(id).classList.remove('open')}
+
+  document.querySelectorAll('.modal-backdrop').forEach(m=>{
+    m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')});
+  });
+
+  const menuBtn=document.getElementById('menuBtn');
+  const sidebar=document.getElementById('sidebar');
+  const overlay=document.getElementById('overlay');
+  menuBtn.addEventListener('click',()=>{sidebar.classList.add('open');overlay.classList.add('open')});
+  overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+</script>
+
+<!--
+AI / DEV IMPLEMENTATION NOTES
+1. This file is a UI prototype only. Replace mock data with API calls.
+2. Suggested stack: Next.js + TypeScript + Ant Design / MUI + .NET 8 Web API.
+3. Keep route, entity and UX rules from "Developer Spec" page.
+4. Implement RBAC with PermissionGuard component.
+5. All mutable entities should contain createdBy, createdAt, updatedBy, updatedAt.
+6. Use soft delete for Requirement, TestCase, TestCycle and Bug.
+7. Fail/Blocked execution requires Actual Result and Evidence.
+8. Add audit history drawer on detail pages.
+9. Provide import/export mapping for Excel Test Case files.
+10. Make Product and Module configurable from Admin, not hardcoded.
+11. AI outputs must be stored as drafts and require human approval before publish.
+12. Add secret/PII masking before calling any AI provider.
+13. Persist prompt template version, model, source IDs, confidence and review decision.
+14. Never allow AI to execute SQL UPDATE/DELETE or close defects automatically.
+15. Markdown-generated tests must store repository, branch, commit hash, file path, heading and line range.
+16. Implement Markdown parsing for headings, tables, lists, code blocks and front matter.
+17. Repository sync should support manual sync first, then webhook/CI integration.
+18. Document diff must classify added, modified and removed business rules.
+19. AI change impact suggestions must remain drafts until QA approval.
+20. Repository credentials must be encrypted and stored outside application logs.
+-->
+</body>
+</html>

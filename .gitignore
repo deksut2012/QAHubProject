@@ -1,0 +1,29 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+secrets.json
+
+# Dependencies and build output
+node_modules/
+.next/
+dist/
+build/
+bin/
+obj/
+
+# Test and tooling output
+coverage/
+.vs/
+.vscode/
+.idea/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
+~$*

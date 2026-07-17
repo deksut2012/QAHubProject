@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeniorSoft QA Hub - Development Plan</title>
+<style>
+:root {
+  --bg:#f5f7fb; --card:#ffffff; --text:#1d2433; --muted:#667085;
+  --primary:#2457d6; --border:#dfe5ef; --soft:#eef3ff;
+  --success:#117a4b; --warn:#a35b00;
+}
+* { box-sizing:border-box; }
+body { margin:0; font-family:"Segoe UI",Tahoma,sans-serif; background:var(--bg); color:var(--text); line-height:1.65; }
+header { background:linear-gradient(135deg,#173a8f,#356ee8); color:#fff; padding:48px 24px; }
+header .wrap, main { max-width:1180px; margin:auto; }
+h1 { margin:0 0 8px; font-size:34px; }
+.subtitle { opacity:.9; }
+nav { position:sticky; top:0; z-index:10; background:#fff; border-bottom:1px solid var(--border); overflow:auto; white-space:nowrap; }
+nav .wrap { max-width:1180px; margin:auto; padding:10px 16px; }
+nav a { display:inline-block; padding:8px 12px; color:var(--primary); text-decoration:none; font-weight:600; }
+main { padding:24px; }
+section { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:26px; margin:18px 0; box-shadow:0 4px 14px rgba(20,40,80,.04); }
+h2 { color:#173a8f; border-bottom:2px solid var(--soft); padding-bottom:8px; }
+h3 { color:#244a9b; margin-top:26px; }
+table { width:100%; border-collapse:collapse; margin:14px 0; }
+th, td { border:1px solid var(--border); padding:10px; text-align:left; vertical-align:top; }
+th { background:var(--soft); }
+code, pre { font-family:Consolas,monospace; }
+pre { background:#111827; color:#f9fafb; padding:16px; border-radius:10px; overflow:auto; }
+.badge { display:inline-block; padding:4px 9px; border-radius:999px; background:var(--soft); color:var(--primary); margin:3px; font-size:13px; }
+.phase { border-left:5px solid var(--primary); padding-left:18px; }
+.checklist { list-style:none; padding-left:0; }
+.checklist li { padding:5px 0 5px 30px; position:relative; }
+.checklist li:before { content:"☐"; position:absolute; left:4px; color:var(--primary); font-size:18px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+.card { border:1px solid var(--border); border-radius:12px; padding:16px; background:#fbfcff; }
+.priority { font-weight:700; }
+.must { color:#b42318; } .should { color:#a15c00; } .could { color:#175cd3; } .future { color:#027a48; }
+footer { text-align:center; color:var(--muted); padding:30px; }
+@media(max-width:700px) {
+  h1 { font-size:27px; }
+  header { padding:32px 18px; }
+  main { padding:12px; }
+  section { padding:18px; border-radius:10px; }
+  th,td { font-size:13px; padding:7px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>SeniorSoft QA Hub</h1>
+    <div class="subtitle">แผนพัฒนาระบบศูนย์รวมเครื่องมือสำหรับทีม QA</div>
+    <div style="margin-top:14px">
+      <span class="badge">Test Management</span>
+      <span class="badge">QA Toolbox</span>
+      <span class="badge">Dashboard</span>
+      <span class="badge">Automation</span>
+      <span class="badge">AI Ready</span>
+    </div>
+  </div>
+</header>
+<nav>
+  <div class="wrap">
+    <a href="#overview">ภาพรวม</a>
+    <a href="#architecture">โครงสร้าง</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#priority">Priority</a>
+    <a href="#ai-assistant">AI Assistant</a>
+    <a href="#sprints">Sprint</a>
+    <a href="#checklists">Checklist</a>
+  </div>
+</nav>
+<main>
+<section id="overview">
+<h2>1. วัตถุประสงค์โครงการ</h2>
+<p>สร้างระบบกลางสำหรับบริหาร Requirement, Test Case, Test Cycle, Test Execution, Bug, Build, Environment และรายงานคุณภาพของทุกผลิตภัณฑ์ในระบบเดียว</p>
+<div class="grid">
+<div class="card"><b>Traceability</b><br>เชื่อม Requirement → Test Case → Result → Bug → Retest</div>
+<div class="card"><b>Multi-Product</b><br>รองรับ ProMaxx, MyMaxx2 และ Product ใหม่</div>
+<div class="card"><b>Audit</b><br>ตรวจสอบผู้แก้ไขและประวัติการเปลี่ยนแปลง</div>
+<div class="card"><b>Quality Dashboard</b><br>ติดตามความพร้อม Release และความเสี่ยง</div>
+</div>
+</section>
+
+<section id="architecture">
+<h2>2. โครงสร้างระบบ</h2>
+<pre>Product
+└── Module
+    └── Requirement
+        └── Test Scenario
+            └── Test Case
+                └── Test Run
+                    └── Bug</pre>
+<table>
+<tr><th>ส่วน</th><th>ขอบเขต</th></tr>
+<tr><td>Test Management</td><td>Requirement, Test Case, Test Cycle, Execution, Bug, Build, Release</td></tr>
+<tr><td>QA Toolbox</td><td>SQL, API, Compare, Data Generator, QR, Log Analyzer</td></tr>
+<tr><td>QA Intelligence</td><td>Dashboard, Risk, Coverage, Automation, AI Assistant</td></tr>
+</table>
+<h3>Technology ที่แนะนำ</h3>
+<ul>
+<li>Frontend: React หรือ Next.js</li>
+<li>Backend: .NET 8 Web API</li>
+<li>Database: SQL Server หรือ PostgreSQL</li>
+<li>Deployment: Docker, DEV/UAT/Production, CI/CD</li>
+</ul>
+</section>
+
+<section id="roadmap">
+<h2>3. Roadmap และลำดับพัฒนา</h2>
+
+<div class="phase"><h3>Phase 0: Discovery</h3>
+<p>สำรวจ Workflow, Pain Point, Product, Role, Template และอนุมัติ MVP Scope</p>
+<ul class="checklist"><li>รวบรวม Test Case ปัจจุบัน</li><li>กำหนด Workflow</li><li>เลือก Pilot Product</li><li>อนุมัติ Wireframe</li><li>สร้าง Backlog</li></ul></div>
+
+<div class="phase"><h3>Phase 1: Foundation</h3>
+<p>Login, User, Role, Permission, Product, Module, Attachment และ Audit Log</p>
+<ul class="checklist"><li>สร้าง Repository</li><li>Database Migration</li><li>Authentication</li><li>Authorization</li><li>Logging</li><li>Responsive Layout</li></ul></div>
+
+<div class="phase"><h3>Phase 2: Requirement</h3>
+<p>Requirement, Acceptance Criteria, Assignment, Attachment, Status และ History</p>
+<ul class="checklist"><li>CRUD</li><li>Filter</li><li>Comment</li><li>Job Number</li><li>Export</li></ul></div>
+
+<div class="phase"><h3>Phase 3: Test Case</h3>
+<p>Scenario, Test Step, Test Data, Expected Result, Clone, Import/Export และ Version</p>
+<ul class="checklist"><li>Test Case ID</li><li>Review</li><li>Approval</li><li>Tag</li><li>Template</li><li>ป้องกันข้อมูลซ้ำ</li></ul></div>
+
+<div class="phase"><h3>Phase 4: Test Execution</h3>
+<p>Test Cycle, Build, Environment, Assignment, Pass/Fail/Blocked และ Evidence</p>
+<ul class="checklist"><li>Create Cycle</li><li>Add Test Case</li><li>Execute</li><li>Re-run</li><li>Progress</li><li>Export Report</li></ul></div>
+
+<div class="phase"><h3>Phase 5: Bug</h3>
+<p>Bug Workflow, Severity, Root Cause, Fix Version, Retest และ Reopen</p>
+<ul class="checklist"><li>Create from Fail</li><li>Assign Dev</li><li>Retest</li><li>History</li><li>Notification</li></ul></div>
+
+<div class="phase"><h3>Phase 6: Build และ Release</h3>
+<p>Version, Environment, Config, Quality Gate, Release Checklist และ QA Sign-off</p>
+<ul class="checklist"><li>Build Master</li><li>Environment</li><li>Quality Gate</li><li>Sign-off</li><li>Release Report</li></ul></div>
+
+<div class="phase"><h3>Phase 7: Dashboard</h3>
+<p>KPI, Workload, Bug Aging, Test Progress, Release Readiness และ Risk</p>
+<ul class="checklist"><li>Product Dashboard</li><li>QA Dashboard</li><li>Release Dashboard</li><li>Drill-down</li><li>Export</li></ul></div>
+
+<div class="phase"><h3>Phase 8: QA Toolbox</h3>
+<p>เพิ่ม SQL Library, API Tester, File Compare, Data Generator, QR/Barcode และ Log Analyzer หลัง Core พร้อม</p>
+<ul class="checklist"><li>กำหนดสิทธิ์เครื่องมือ</li><li>Audit Execution</li><li>Read-only Mode</li><li>ป้องกันข้อมูลสำคัญ</li></ul>
+</div>
+
+<div class="phase"><h3>Phase 9: Integration และ Notification</h3>
+<p>เชื่อม Email, Discord, Google Sheet, Git, CI/CD, Customer Case และระบบงาน Dev</p>
+<ul class="checklist"><li>Webhook</li><li>Daily QA Summary</li><li>Build Notification</li><li>Bug Notification</li><li>API Token Management</li></ul>
+</div>
+
+<div class="phase"><h3>Phase 10: AI Test Assistant และ Automation</h3>
+<p>วิเคราะห์ Requirement หรือ Error เพื่อสร้าง Test Scenario, Test Case, Bug Draft และ Regression Scope โดยต้องผ่าน QA Review ก่อนเผยแพร่</p>
+<ul class="checklist"><li>Requirement-to-Test Case</li><li>Error/Log Analyzer</li><li>Markdown Documentation-to-Test Case</li><li>Git Repository Sync</li><li>Document Version Diff</li><li>Source Traceability</li><li>AI Draft Review</li><li>Confidence Score</li><li>PII/Secret Masking</li><li>Prompt Audit</li><li>Automation Result Import</li></ul>
+</div>
+</section>
+
+<section id="priority">
+<h2>4. ลำดับความสำคัญ</h2>
+<table>
+<tr><th>ระดับ</th><th>รายการ</th></tr>
+<tr><td class="priority must">Must Have</td><td>Authentication, Product, Requirement, Test Case, Test Cycle, Execution, Bug, Build, Dashboard</td></tr>
+<tr><td class="priority should">Should Have</td><td>Version, Import Excel, Release Checklist, Sign-off, Notification, Audit</td></tr>
+<tr><td class="priority could">Could Have</td><td>SQL Tool, API Tool, File Compare, Data Generator, QR, Log Analyzer</td></tr>
+<tr><td class="priority future">Future</td><td>Automation, AI Assistant, Risk Prediction, Smart Regression</td></tr>
+</table>
+</section>
+
+
+<section id="ai-assistant">
+<h2>5. AI Test Assistant</h2>
+<p>โมดูล AI ทำหน้าที่ช่วยวิเคราะห์ข้อมูลและเตรียม Draft ให้ทีม QA ไม่ใช่ตัดสินใจหรือเผยแพร่ Test Case อัตโนมัติโดยไม่มีผู้ตรวจสอบ</p>
+<div class="grid">
+<div class="card"><h3>Requirement Analyzer</h3><p>รับ Requirement, Acceptance Criteria, Product, Module และเงื่อนไขธุรกิจ แล้วสร้าง Test Scenario และ Test Case แบบ Positive, Negative, Boundary, Permission, Integration และ Regression</p></div>
+<div class="card"><h3>Error Analyzer</h3><p>รับ Error Message, Stack Trace, SQL Error, API Response, Log หรือ Screenshot แล้วสรุป Error Signature, Possible Root Cause, Recommended Checks, Bug Draft และ Test Case สำหรับ Reproduce/Regression</p></div>
+
+<div class="card"><h3>Markdown Documentation Analyzer</h3><p>อ่านไฟล์ .md ของแต่ละ Product/Module จากการ Upload หรือ Git Repository แล้วแยก Objective, Flow, Business Rule, Validation, Permission, API, Database, Error Handling และ Known Limitation เพื่อสร้าง Test Scenario และ Test Case พร้อม Source Reference</p></div>
+<div class="card"><h3>Review & Governance</h3><p>ทุกผลลัพธ์ต้องอยู่ในสถานะ AI Draft แสดง Confidence Score, Assumption, Missing Information และผ่าน QA Review ก่อนบันทึกเป็น Test Case หรือ Bugจริง</p></div>
+</div>
+
+<h3>Workflow: Requirement → Test Case</h3>
+<pre>เลือก Product / Module
+→ เลือกหรือวาง Requirement
+→ AI แยก Business Rule และ Acceptance Criteria
+→ Generate Scenario และ Test Case
+→ QA ตรวจแก้ / เลือกเฉพาะรายการ
+→ QA Lead Review
+→ Approved และ Publish เข้าคลัง Test Case</pre>
+
+
+<h3>Workflow: Markdown Documentation → Test Case</h3>
+<pre>Upload .md หรือเชื่อม Git Repository
+→ เลือก Product / Module / Branch / Version
+→ Parse Heading, Table, Code Block และ Metadata
+→ AI แยก Objective, Flow, Business Rule, Validation และ Dependency
+→ แสดงข้อมูลที่ขัดแย้งหรือยังไม่ครบ
+→ สร้าง Scenario, Test Case, Test Data และ Regression Scope
+→ QA ตรวจสอบ Source Reference และ Assumption
+→ Approve และ Publish เข้าคลัง Test Case</pre>
+
+<h3>Workflow: Document Change Impact</h3>
+<pre>Dev Commit การแก้ไขไฟล์ .md
+→ ระบบ Sync Commit ล่าสุดและคำนวณ Diff
+→ AI วิเคราะห์ Business Rule ที่เพิ่ม แก้ไข หรือลบ
+→ Mapping กับ Test Case เดิม
+→ แจ้ง Test Case ที่ได้รับผลกระทบ
+→ เสนอ Test Case ใหม่ / Test Case ที่ต้องแก้ / Regression Scope
+→ QA Review ก่อน Update Version</pre>
+
+<h3>Workflow: Error → Bug และ Regression Test</h3>
+<pre>วาง Error / Upload Log / API Response
+→ Mask Password, Token และข้อมูลส่วนบุคคล
+→ AI วิเคราะห์ Error Signature และสาเหตุที่เป็นไปได้
+→ สร้าง Bug Draft + Steps to Reproduce
+→ สร้าง Reproduction Test และ Regression Test
+→ QA ตรวจสอบกับ Build / Environment จริง
+→ บันทึก Bug และ Test Case</pre>
+
+<h3>ข้อมูลผลลัพธ์ที่ AI ต้องสร้าง</h3>
+<table>
+<tr><th>หมวด</th><th>ข้อมูล</th></tr>
+<tr><td>Test Design</td><td>Scenario, Title, Preconditions, Test Data, Steps, Expected Result, Type, Priority</td></tr>
+<tr><td>Analysis</td><td>Business Rules, Risk, Coverage Warning, Assumption, Missing Information, Confidence Score</td></tr>
+<tr><td>Error Analysis</td><td>Error Signature, Component, Possible Root Cause, Recommended Checks, Reproduce Steps</td></tr>
+<tr><td>Traceability</td><td>Product, Module, Requirement ID, Build, Environment, Source Error, Generated By</td></tr>
+<tr><td>Document Source</td><td>Repository, Folder, File Path, Branch, Commit Hash, Document Version, Section Heading, Line Range</td></tr>
+<tr><td>Change Impact</td><td>Added Rule, Modified Rule, Removed Rule, Impacted Test Cases, Suggested Regression Scope</td></tr>
+</table>
+
+<h3>สถานะ AI Draft</h3>
+<pre>Generated → Pending Review → Needs Revision → Approved → Published
+                         └→ Rejected</pre>
+
+<h3>Checklist การพัฒนา AI Test Assistant</h3>
+<div class="grid">
+<div class="card"><h3>Input</h3><ul class="checklist"><li>เลือก Product และ Module</li><li>เลือก Requirement จากระบบ</li><li>วางข้อความ Requirement</li><li>Upload Markdown</li><li>เลือก Folder จาก Repository</li><li>เลือก Branch / Commit</li><li>Upload Log</li><li>วาง SQL/API Error</li><li>รองรับ Screenshot</li></ul></div>
+<div class="card"><h3>Generation</h3><ul class="checklist"><li>สร้าง Positive Case</li><li>สร้าง Negative Case</li><li>สร้าง Boundary Case</li><li>สร้าง Permission Case</li><li>สร้าง Integration Case</li><li>สร้าง Regression Case</li></ul></div>
+<div class="card"><h3>Review</h3><ul class="checklist"><li>แก้ไข Draft ได้</li><li>เลือกบาง Test Case ได้</li><li>Reject พร้อมเหตุผล</li><li>แสดง Confidence</li><li>แสดง Assumption</li><li>Diff ก่อน Publish</li></ul></div>
+
+<div class="card"><h3>Documentation & Git</h3><ul class="checklist"><li>รองรับ .md หลายไฟล์</li><li>กำหนด Folder ต่อ Product</li><li>Sync Repository แบบ Manual/Webhook</li><li>อ่าน Commit Hash</li><li>เปรียบเทียบ Version Diff</li><li>สร้าง Source Citation ระดับ Section/Line</li><li>Mapping Document กับ Test Case</li><li>แจ้ง Conflict และ Missing Information</li></ul></div>
+<div class="card"><h3>Security</h3><ul class="checklist"><li>Mask Password/Token</li><li>Mask PII</li><li>กำหนด Data Retention</li><li>Prompt Audit Log</li><li>จำกัด Product Access</li><li>เก็บ Repository Token ใน Secret Store</li><li>ห้าม Execute SQL อัตโนมัติ</li></ul></div>
+</div>
+
+<h3>Definition of Done</h3>
+<ul class="checklist">
+<li>AI สร้าง Test Case Draft จาก Requirement ได้</li>
+<li>AI สร้าง Bug Draft และ Regression Test จาก Error ได้</li>
+<li>AI อ่านไฟล์ Markdown และสร้าง Test Case Draft พร้อม Source Reference ได้</li>
+<li>ระบบ Sync Repository และระบุ Branch / Commit Hash ของเอกสารได้</li>
+<li>ระบบวิเคราะห์ Diff และแจ้ง Test Case ที่ได้รับผลกระทบได้</li>
+<li>ผลลัพธ์ทุกชิ้น Trace กลับไปยัง Source ได้</li>
+<li>QA แก้ไข เลือก Reject และ Approve ได้</li>
+<li>ระบบ Mask Secret ก่อนส่งให้ AI</li>
+<li>บันทึก Prompt, Model, ผู้ใช้งาน และผลการ Review ใน Audit Log</li>
+<li>AI ไม่สามารถ Publish หรือ Execute คำสั่งอันตรายโดยไม่มี Human Approval</li>
+</ul>
+</section>
+
+<section id="sprints">
+<h2>6. แผน Sprint ตัวอย่าง</h2>
+<table>
+<tr><th>Sprint</th><th>เป้าหมาย</th></tr>
+<tr><td>0</td><td>Workshop, Wireframe, Architecture, Repository, Database, CI/CD</td></tr>
+<tr><td>1</td><td>Login, User, Role, Product, Module</td></tr>
+<tr><td>2</td><td>Requirement, Assignment, Attachment, Filter</td></tr>
+<tr><td>3</td><td>Scenario, Test Case, Test Step, Tag</td></tr>
+<tr><td>4</td><td>Clone, Review, Approval, Version, Import/Export</td></tr>
+<tr><td>5</td><td>Test Cycle, Build, Environment, Assign QA</td></tr>
+<tr><td>6</td><td>Test Execution, Evidence, Progress, Re-run</td></tr>
+<tr><td>7</td><td>Bug, Workflow, Retest, Reopen</td></tr>
+<tr><td>8</td><td>Dashboard, Quality Gate, Release, Sign-off</td></tr>
+<tr><td>9</td><td>Pilot ProMaxx/MyMaxx2, UAT, Training, Production</td></tr>
+<tr><td>10</td><td>Markdown Parser, Document Repository, Source Traceability</td></tr>
+<tr><td>11</td><td>AI Test Generation from Markdown, Review Workflow, Test Case Mapping</td></tr>
+<tr><td>12</td><td>Git Sync, Document Diff, Change Impact และ Smart Regression</td></tr>
+</table>
+</section>
+
+<section id="checklists">
+<h2>7. Checklist ก่อนเริ่มพัฒนา</h2>
+<div class="grid">
+<div class="card"><h3>Business</h3><ul class="checklist"><li>Project Owner</li><li>Dev Team</li><li>QA Team</li><li>Scope</li><li>Pilot Product</li></ul></div>
+<div class="card"><h3>Requirement</h3><ul class="checklist"><li>Product List</li><li>Module List</li><li>Role</li><li>Workflow</li><li>Template</li><li>KPI</li></ul></div>
+<div class="card"><h3>Technical</h3><ul class="checklist"><li>Technology</li><li>Repository</li><li>DEV/UAT/PROD</li><li>Database</li><li>CI/CD</li><li>Backup</li></ul></div>
+<div class="card"><h3>Security</h3><ul class="checklist"><li>Permission Matrix</li><li>Secret Management</li><li>Upload Validation</li><li>Audit Log</li><li>Data Retention</li></ul></div>
+</div>
+
+<h2>8. Checklist ก่อน Production</h2>
+<ul class="checklist">
+<li>UAT ผ่าน</li><li>Critical และ High Bug ปิดครบ</li><li>Backup/Restore ผ่าน</li>
+<li>Permission Review</li><li>User Training</li><li>User/Admin Manual</li>
+<li>Monitoring</li><li>Rollback Plan</li><li>QA Sign-off</li>
+</ul>
+</section>
+
+<section>
+<h2>9. Pilot Product</h2>
+<div class="grid">
+<div class="card"><h3>ProMaxx</h3><p>ใช้พิสูจน์ Desktop, Database, Stock, Cost, Permission, Multi-Branch, Build และ Regression</p></div>
+<div class="card"><h3>MyMaxx2</h3><p>ใช้พิสูจน์ Web, Mobile, API, Payment, APIService, Responsive และ Integration</p></div>
+</div>
+</section>
+
+<section>
+<h2>10. ลำดับที่ต้องยึด</h2>
+<pre>Discovery
+→ Foundation
+→ Requirement
+→ Test Case
+→ Test Cycle
+→ Test Execution
+→ Bug
+→ Build / Release
+→ Dashboard
+→ QA Toolbox
+→ Integration
+→ Automation
+→ AI</pre>
+<p><b>ข้อสำคัญ:</b> ไม่ควรเริ่มจาก AI หรือ QA Toolbox ก่อนที่ข้อมูล Requirement, Test Case, Test Result และ Bug จะเชื่อมโยงกันครบ</p>
+</section>
+</main>
+<footer>SeniorSoft QA Hub Development Plan</footer>
+</body>
+</html>
