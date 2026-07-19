@@ -7,3 +7,9 @@ public sealed record TestStepResponse(Guid Id,int Sequence,string Action,string 
 public sealed record TestCaseResponse(Guid Id,Guid ProductId,Guid? ModuleId,Guid? RequirementId,string Code,int Version,Guid VersionId,string Title,string Scenario,string Preconditions,string Tags,TestCaseStatus Status,IReadOnlyList<TestStepResponse> Steps,DateTimeOffset UpdatedAtUtc);
 public sealed record TestCaseListItem(Guid Id,Guid ProductId,Guid? ModuleId,Guid? RequirementId,string Code,int Version,string Title,TestCaseStatus Status,DateTimeOffset UpdatedAtUtc);
 public sealed record TestCaseCollectionResponse(IReadOnlyList<TestCaseListItem> Items,int Page,int PageSize,int TotalCount);
+public sealed record CreateTestCaseCommentRequest(string? Body);
+public sealed record TestCaseCommentResponse(Guid Id,string AuthorId,string Body,DateTimeOffset CreatedAtUtc);
+public sealed record TestCaseHistoryEntryResponse(Guid Id,TestCaseStatus Status,string ActorId,DateTimeOffset OccurredAtUtc);
+public sealed record UpdateTestCaseCoverageRequest(Guid? RequirementId,Guid? ModuleId);
+public sealed record ImportTestCasesRequest(Guid ProductId,string? Csv);
+public sealed record ImportTestCasesResponse(int Imported,IReadOnlyList<string> Errors);

@@ -1,6 +1,6 @@
 # Phase 3 — Test Case Management
 
-สถานะ: **In progress**
+สถานะ: **Implementation complete / Conditional GO**
 
 ## Vertical slice แรก
 
@@ -13,10 +13,14 @@
 - Filter ตาม Product, Requirement, Status และข้อความค้นหา
 - หน้า list/create/detail/editor ตาม UI Prototype
 - Clone Test Case พร้อมคัดลอกเนื้อหาและ steps ไปยัง Test Case ใหม่
-
-## งานถัดไป
-
-- Clone พร้อม source traceability
-- Import/Export และ duplicate detection
-- Review comments, approval actor/history และ reusable templates
+- Clone traceability สำหรับเก็บ source test case/version ของการ clone
+- Duplicate detection จาก title/scenario แบบ normalized
+- Review comments และ approval/status history พร้อม actor/timestamp
+- CSV import/export API และ reusable templates ในหน้าสร้าง Test Case
 - Requirement coverage link management
+
+## Exit conditions
+
+- Build, lint, tests และ SQL Server migration/integration tests ผ่าน
+- ก่อน Production GO ต้องยืนยันสิทธิ์ผู้อนุมัติ, รูปแบบ CSV มาตรฐาน และ template ownership
+- Phase ถัดไป: Phase 4 — Test Execution

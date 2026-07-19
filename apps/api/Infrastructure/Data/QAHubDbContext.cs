@@ -24,8 +24,10 @@ public sealed class QAHubDbContext(
     public DbSet<RequirementComment> RequirementComments => Set<RequirementComment>();
     public DbSet<RequirementAttachment> RequirementAttachments => Set<RequirementAttachment>();
     public DbSet<TestCase> TestCases => Set<TestCase>();
+    public DbSet<TestCaseComment> TestCaseComments => Set<TestCaseComment>();
     public DbSet<TestCaseVersion> TestCaseVersions => Set<TestCaseVersion>();
     public DbSet<TestCaseStep> TestCaseSteps => Set<TestCaseStep>();
+    public DbSet<TestCaseHistoryEntry> TestCaseHistory => Set<TestCaseHistoryEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -125,7 +127,16 @@ public sealed class QAHubDbContext(
         testCase.HasOne<Product>().WithMany().HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Restrict);
         testCase.HasOne<ProductModule>().WithMany().HasForeignKey(x => x.ModuleId).OnDelete(DeleteBehavior.Restrict);
         testCase.HasOne<Requirement>().WithMany().HasForeignKey(x => x.RequirementId).OnDelete(DeleteBehavior.Restrict);
+        testCase.HasOne<TestCase>().WithMany().HasForeignKey(x => x.SourceTestCaseId).OnDelete(DeleteBehavior.NoAction);
+        testCase.HasOne<TestCaseVersion>().WithMany().HasForeignKey(x => x.SourceVersionId).OnDelete(DeleteBehavior.NoAction);
         testCase.HasMany(x => x.Versions).WithOne().HasForeignKey(x => x.TestCaseId).OnDelete(DeleteBehavior.Cascade);
+
+        var testCaseComment = modelBuilder.Entity<TestCaseComment>();
+        testCaseComment.ToTable("TestCaseComments"); testCaseComment.HasKey(x => x.Id);
+        testCaseComment.Property(x => x.AuthorId).HasMaxLength(200).IsRequired();
+        testCaseComment.Property(x => x.Body).HasMaxLength(4000).IsRequired();
+        testCaseComment.HasIndex(x => new { x.TestCaseId, x.CreatedAtUtc });
+        testCaseComment.HasOne<TestCase>().WithMany().HasForeignKey(x => x.TestCaseId).OnDelete(DeleteBehavior.Cascade);
 
         var testVersion = modelBuilder.Entity<TestCaseVersion>();
         testVersion.ToTable("TestCaseVersions"); testVersion.HasKey(x => x.Id);
@@ -136,6 +147,7 @@ public sealed class QAHubDbContext(
         testVersion.Property(x => x.Status).HasConversion<string>().HasMaxLength(30).IsRequired();
         testVersion.HasIndex(x => new { x.TestCaseId, x.VersionNumber }).IsUnique();
         testVersion.HasMany(x => x.Steps).WithOne().HasForeignKey(x => x.TestCaseVersionId).OnDelete(DeleteBehavior.Cascade);
+        testVersion.HasMany(x => x.History).WithOne().HasForeignKey(x => x.TestCaseVersionId).OnDelete(DeleteBehavior.Cascade);
 
         var testStep = modelBuilder.Entity<TestCaseStep>();
         testStep.ToTable("TestCaseSteps"); testStep.HasKey(x => x.Id);
@@ -143,6 +155,11 @@ public sealed class QAHubDbContext(
         testStep.Property(x => x.TestData).HasMaxLength(2000).IsRequired();
         testStep.Property(x => x.ExpectedResult).HasMaxLength(2000).IsRequired();
         testStep.HasIndex(x => new { x.TestCaseVersionId, x.Sequence }).IsUnique();
+
+        var history = modelBuilder.Entity<TestCaseHistoryEntry>();
+        history.ToTable("TestCaseHistory"); history.HasKey(x => x.Id);
+        history.Property(x => x.ActorId).HasMaxLength(200).IsRequired();
+        history.Property(x => x.Status).HasConversion<string>().HasMaxLength(30).IsRequired();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -157,7 +174,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep;
+        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
@@ -178,6 +195,7 @@ public sealed class QAHubDbContext(
             TestCase testCase => testCase.ProductId,
             TestCaseVersion version => TestCases.Where(x => x.Id == version.TestCaseId).Select(x => (Guid?)x.ProductId).FirstOrDefault(),
             TestCaseStep step => TestCaseVersions.Where(x => x.Id == step.TestCaseVersionId).Select(x => TestCases.Where(tc => tc.Id == x.TestCaseId).Select(tc => (Guid?)tc.ProductId).FirstOrDefault()).FirstOrDefault(),
+            TestCaseComment comment => TestCases.Where(x => x.Id == comment.TestCaseId).Select(x => (Guid?)x.ProductId).FirstOrDefault(),
             _ => (Guid?)null,
         };
         var changes = entry.Properties
