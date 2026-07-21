@@ -43,8 +43,10 @@ public static class ExecutionEndpoints
         var data = await db.TestCaseVersions.AsNoTracking()
             .Where(v => v.Status == TestCaseStatus.Approved || v.Status == TestCaseStatus.Active)
             .Join(db.TestCases.Where(tc => tc.ProductId == productId), v => v.TestCaseId, tc => tc.Id,
-                (v, tc) => new ExecutionCandidateResponse(v.Id, tc.Id, tc.Code, v.Title, v.VersionNumber, v.Status))
-            .OrderBy(x => x.Code).ThenByDescending(x => x.VersionNumber).ToListAsync(ct);
+                (v, tc) => new { Version = v, TestCase = tc })
+            .OrderBy(x => x.TestCase.Code).ThenByDescending(x => x.Version.VersionNumber)
+            .Select(x => new ExecutionCandidateResponse(x.Version.Id, x.TestCase.Id, x.TestCase.Code, x.Version.Title, x.Version.VersionNumber, x.Version.Status))
+            .ToListAsync(ct);
         return Results.Ok(data);
     }
 

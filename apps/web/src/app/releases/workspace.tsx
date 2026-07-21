@@ -70,14 +70,14 @@ export function ReleaseWorkspace({
     ])
       .then(async (rs) => {
         const [e, b, c, requirementPage, productBugs] = await Promise.all(rs.map((r) => r.json()));
-        setEnvs(e);
+        setEnvs(e.items);
         setBuilds(b);
         setCycles(c);
         setRequirements(requirementPage.items);
         setBugs(productBugs);
         setRequirementIds([]);
         setKnownIssueBugIds([]);
-        setEnvironmentId(e[0]?.id ?? "");
+        setEnvironmentId(e.items[0]?.id ?? "");
         setBuildId(b[0]?.id ?? "");
       })
       .catch(() => setError("โหลด Build/Environment ไม่สำเร็จ"));
