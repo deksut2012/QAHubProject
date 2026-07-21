@@ -5,6 +5,7 @@ using QAHub.Api.Domain.TestDesign;
 using QAHub.Api.Domain.Execution;
 using QAHub.Api.Domain.Defects;
 using QAHub.Api.Domain.Releases;
+using QAHub.Api.Domain.Reporting;
 using QAHub.Api.Infrastructure.Data;
 
 namespace QAHub.Api.Tests;
@@ -72,5 +73,15 @@ public sealed class DatabaseIntegrationTests
         db.Releases.Add(release); await db.SaveChangesAsync();
         Assert.True(await db.Releases.AnyAsync(x=>x.Id==release.Id&&x.Status==ReleaseStatus.Released&&x.PostReleaseValidated));
         Assert.True(await db.ReleaseRequirements.AnyAsync(x=>x.ReleaseId==release.Id&&x.RequirementId==requirement.Id));
+
+        var scheduledReport = new ScheduledReport(product.Id, "Integration dashboard report", ReportFrequency.Weekly, new TimeOnly(8, 0), "qa@example.com", DateTimeOffset.UtcNow);
+        db.ScheduledReports.Add(scheduledReport); await db.SaveChangesAsync();
+        Assert.True(await db.ScheduledReports.AnyAsync(x => x.Id == scheduledReport.Id && x.IsEnabled));
+
+        var latestResults = await db.TestCycleItems.Where(x => x.TestCycleId == cycle.Id)
+            .Select(x => x.Attempts.OrderByDescending(a => a.AttemptNumber).Select(a => (ExecutionResult?)a.Result).FirstOrDefault()).ToListAsync();
+        var reconciled = QAHub.Api.Features.Reporting.DashboardCalculator.ReconcileExecution(latestResults);
+        Assert.Equal(await db.TestCycleItems.CountAsync(x => x.TestCycleId == cycle.Id), reconciled.Total);
+        Assert.Equal(1, reconciled.Passed);
     }
 }

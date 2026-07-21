@@ -43,4 +43,16 @@ public static class DashboardCalculator
         "Medium" => 7,
         _ => 14
     };
+
+    public static ExecutionSummary ReconcileExecution(IEnumerable<QAHub.Api.Domain.Execution.ExecutionResult?> latestResults)
+    {
+        var results = latestResults.ToList();
+        var executed = results.Count(x => x.HasValue);
+        var passed = results.Count(x => x == QAHub.Api.Domain.Execution.ExecutionResult.Passed);
+        return new ExecutionSummary(results.Count, executed, passed,
+            results.Count(x => x == QAHub.Api.Domain.Execution.ExecutionResult.Failed),
+            results.Count(x => x == QAHub.Api.Domain.Execution.ExecutionResult.Blocked),
+            results.Count(x => x == QAHub.Api.Domain.Execution.ExecutionResult.Skipped),
+            Percentage(passed, executed));
+    }
 }

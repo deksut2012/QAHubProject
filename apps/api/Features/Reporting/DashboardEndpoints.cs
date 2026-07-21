@@ -3,6 +3,7 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Domain.Defects;
 using QAHub.Api.Domain.Execution;
+using QAHub.Api.Domain.Reporting;
 using QAHub.Api.Infrastructure.Data;
 using QAHub.Api.Infrastructure.Security;
 
@@ -17,8 +18,39 @@ public static class DashboardEndpoints
             .RequireAuthorization(AuthorizationPolicies.ProductAccess);
         group.MapGet("/", Get);
         group.MapGet("/report", Report);
+        group.MapGet("/schedules", GetSchedules);
+        group.MapPost("/schedules", CreateSchedule);
+        group.MapPut("/schedules/{id:guid}/enabled", SetScheduleEnabled);
         return endpoints;
     }
+
+    private static async Task<IResult> GetSchedules(QAHubDbContext db, Guid? productId, CancellationToken ct)
+    {
+        var query = db.ScheduledReports.AsNoTracking().AsQueryable();
+        if (productId.HasValue) query = query.Where(x => x.ProductId == productId);
+        return Results.Ok(await query.OrderBy(x => x.NextRunAtUtc).Select(x => Map(x)).ToListAsync(ct));
+    }
+
+    private static async Task<IResult> CreateSchedule(CreateScheduledReportRequest request, QAHubDbContext db, CancellationToken ct)
+    {
+        if (request.ProductId.HasValue && !await db.Products.AnyAsync(x => x.Id == request.ProductId, ct))
+            return Results.ValidationProblem(new Dictionary<string, string[]> { ["productId"] = ["Product does not exist."] });
+        if (string.IsNullOrWhiteSpace(request.Name) || string.IsNullOrWhiteSpace(request.Recipients))
+            return Results.ValidationProblem(new Dictionary<string, string[]> { ["schedule"] = ["Name and recipients are required."] });
+        var schedule = new ScheduledReport(request.ProductId, request.Name, request.Frequency, request.DeliveryTimeUtc, request.Recipients, DateTimeOffset.UtcNow);
+        db.ScheduledReports.Add(schedule); await db.SaveChangesAsync(ct);
+        return Results.Created($"/api/v1/dashboard/schedules/{schedule.Id}", Map(schedule));
+    }
+
+    private static async Task<IResult> SetScheduleEnabled(Guid id, SetScheduledReportEnabledRequest request, QAHubDbContext db, CancellationToken ct)
+    {
+        var schedule = await db.ScheduledReports.SingleOrDefaultAsync(x => x.Id == id, ct);
+        if (schedule is null) return Results.NotFound();
+        schedule.SetEnabled(request.IsEnabled, DateTimeOffset.UtcNow); await db.SaveChangesAsync(ct);
+        return Results.Ok(Map(schedule));
+    }
+
+    private static ScheduledReportResponse Map(ScheduledReport x) => new(x.Id, x.ProductId, x.Name, x.Frequency, x.DeliveryTimeUtc, x.Recipients, x.IsEnabled, x.NextRunAtUtc, x.LastRunAtUtc);
 
     private static async Task<IResult> Get(QAHubDbContext db, Guid? productId, CancellationToken ct) =>
         Results.Ok(await Build(db, productId, ct));
@@ -73,7 +105,7 @@ public static class DashboardEndpoints
         var openBugs = await bugs.Where(x => !terminal.Contains(x.Status)).ToListAsync(ct);
         var cycleData = await cycles.ToListAsync(ct);
         var latest = cycleData.SelectMany(c => c.Items).Select(i => i.Attempts.OrderBy(a => a.AttemptNumber).LastOrDefault()).ToList();
-        var executed = latest.Count(x => x is not null);
+        var execution = DashboardCalculator.ReconcileExecution(latest.Select(x => x?.Result));
         var attempts = cycleData.SelectMany(c => c.Items).SelectMany(i => i.Attempts).Where(a => a.ExecutedAtUtc >= now.AddDays(-13)).ToList();
         var trend = Enumerable.Range(0, 14)
             .Select(offset => DateOnly.FromDateTime(now.UtcDateTime.Date.AddDays(offset - 13)))
@@ -103,7 +135,7 @@ public static class DashboardEndpoints
             await products.CountAsync(ct), requirementCount, await testCases.CountAsync(ct), openBugs.Count,
             openBugs.Count(b => b.Severity is BugSeverity.Critical or BugSeverity.High),
             DashboardCalculator.Percentage(coveredRequirements, requirementCount),
-            new ExecutionSummary(latest.Count, executed, latest.Count(x => x?.Result == ExecutionResult.Passed), latest.Count(x => x?.Result == ExecutionResult.Failed), latest.Count(x => x?.Result == ExecutionResult.Blocked), latest.Count(x => x?.Result == ExecutionResult.Skipped), DashboardCalculator.Percentage(latest.Count(x => x?.Result == ExecutionResult.Passed), executed)),
+            execution,
             await requirements.GroupBy(x => x.Status).Select(g => new NamedCount(g.Key.ToString(), g.Count())).ToListAsync(ct),
             openBugs.GroupBy(x => x.Severity).Select(g => new NamedCount(g.Key.ToString(), g.Count())).ToList(),
             trend, workload, bugAging, releaseData.Count,

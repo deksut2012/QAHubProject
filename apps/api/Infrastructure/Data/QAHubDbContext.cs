@@ -9,6 +9,7 @@ using QAHub.Api.Domain.TestDesign;
 using QAHub.Api.Domain.Execution;
 using QAHub.Api.Domain.Defects;
 using QAHub.Api.Domain.Releases;
+using QAHub.Api.Domain.Reporting;
 
 namespace QAHub.Api.Infrastructure.Data;
 
@@ -34,6 +35,7 @@ public sealed class QAHubDbContext(
     public DbSet<ProductBuild> ProductBuilds => Set<ProductBuild>(); public DbSet<TestCycle> TestCycles => Set<TestCycle>(); public DbSet<TestCycleItem> TestCycleItems => Set<TestCycleItem>(); public DbSet<TestRunAttempt> TestRunAttempts => Set<TestRunAttempt>(); public DbSet<TestRunEvidence> TestRunEvidenceFiles => Set<TestRunEvidence>();
     public DbSet<Bug> Bugs => Set<Bug>(); public DbSet<BugRunLink> BugRunLinks => Set<BugRunLink>(); public DbSet<BugStatusHistory> BugStatusHistories => Set<BugStatusHistory>(); public DbSet<BugComment> BugComments => Set<BugComment>(); public DbSet<BugEvidence> BugEvidenceFiles => Set<BugEvidence>(); public DbSet<BugRelation> BugRelations => Set<BugRelation>();
     public DbSet<ReleaseCandidate> Releases => Set<ReleaseCandidate>(); public DbSet<ReleaseChecklistItem> ReleaseChecklistItems => Set<ReleaseChecklistItem>(); public DbSet<ReleaseRequirement> ReleaseRequirements => Set<ReleaseRequirement>(); public DbSet<ReleaseKnownIssue> ReleaseKnownIssues => Set<ReleaseKnownIssue>();
+    public DbSet<ScheduledReport> ScheduledReports => Set<ScheduledReport>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -181,6 +183,7 @@ public sealed class QAHubDbContext(
         var releaseCheck=modelBuilder.Entity<ReleaseChecklistItem>();releaseCheck.ToTable("ReleaseChecklistItems");releaseCheck.HasKey(x=>x.Id);releaseCheck.Property(x=>x.Code).HasMaxLength(50);releaseCheck.Property(x=>x.Label).HasMaxLength(250);releaseCheck.Property(x=>x.CompletedBy).HasMaxLength(200);releaseCheck.HasIndex(x=>new{x.ReleaseId,x.Code}).IsUnique();
         var releaseRequirement=modelBuilder.Entity<ReleaseRequirement>();releaseRequirement.ToTable("ReleaseRequirements");releaseRequirement.HasKey(x=>x.Id);releaseRequirement.HasIndex(x=>new{x.ReleaseId,x.RequirementId}).IsUnique();releaseRequirement.HasOne<Requirement>().WithMany().HasForeignKey(x=>x.RequirementId).OnDelete(DeleteBehavior.Restrict);
         var knownIssue=modelBuilder.Entity<ReleaseKnownIssue>();knownIssue.ToTable("ReleaseKnownIssues");knownIssue.HasKey(x=>x.Id);knownIssue.Property(x=>x.Mitigation).HasMaxLength(2000);knownIssue.HasIndex(x=>new{x.ReleaseId,x.BugId}).IsUnique();knownIssue.HasOne<Bug>().WithMany().HasForeignKey(x=>x.BugId).OnDelete(DeleteBehavior.Restrict);
+        var scheduledReport=modelBuilder.Entity<ScheduledReport>();scheduledReport.ToTable("ScheduledReports");scheduledReport.HasKey(x=>x.Id);scheduledReport.Property(x=>x.Name).HasMaxLength(200).IsRequired();scheduledReport.Property(x=>x.Frequency).HasConversion<string>().HasMaxLength(20).IsRequired();scheduledReport.Property(x=>x.Recipients).HasMaxLength(2000).IsRequired();scheduledReport.HasIndex(x=>new{x.IsEnabled,x.NextRunAtUtc});scheduledReport.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -195,7 +198,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence or Bug or BugRunLink or BugStatusHistory or BugComment or BugEvidence or BugRelation or ReleaseCandidate or ReleaseChecklistItem or ReleaseRequirement or ReleaseKnownIssue;
+            entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence or Bug or BugRunLink or BugStatusHistory or BugComment or BugEvidence or BugRelation or ReleaseCandidate or ReleaseChecklistItem or ReleaseRequirement or ReleaseKnownIssue or ScheduledReport;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
@@ -221,6 +224,7 @@ public sealed class QAHubDbContext(
             TestCycle cycle => cycle.ProductId,
             Bug bug => bug.ProductId,
             ReleaseCandidate release => release.ProductId,
+            ScheduledReport report => report.ProductId,
             _ => (Guid?)null,
         };
         var changes = entry.Properties
