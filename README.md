@@ -4,7 +4,7 @@
 
 ## สถานะโครงการ
 
-- Phase ปัจจุบัน: **Phase 3 — Test Case Management complete; ready to begin Phase 4**
+- Phase ปัจจุบัน: **Phase 4 — Test Execution complete (conditional); ready to begin Phase 5**
 - Phase 0 gate: **Conditional GO** สำหรับ technical foundation; business workflow/owner approvals ยังต้องปิดก่อนเริ่ม module จริง
 - เป้าหมาย Phase 0: ทำให้ Project Charter, MVP Scope, Initial Backlog, Architecture Direction และ Owner พร้อมขออนุมัติ
 - เอกสารทำงาน: [docs/phase-0/README.md](docs/phase-0/README.md)

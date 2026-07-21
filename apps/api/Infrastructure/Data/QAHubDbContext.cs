@@ -29,7 +29,7 @@ public sealed class QAHubDbContext(
     public DbSet<TestCaseVersion> TestCaseVersions => Set<TestCaseVersion>();
     public DbSet<TestCaseStep> TestCaseSteps => Set<TestCaseStep>();
     public DbSet<TestCaseHistoryEntry> TestCaseHistory => Set<TestCaseHistoryEntry>();
-    public DbSet<ProductBuild> ProductBuilds => Set<ProductBuild>(); public DbSet<TestCycle> TestCycles => Set<TestCycle>(); public DbSet<TestCycleItem> TestCycleItems => Set<TestCycleItem>(); public DbSet<TestRunAttempt> TestRunAttempts => Set<TestRunAttempt>();
+    public DbSet<ProductBuild> ProductBuilds => Set<ProductBuild>(); public DbSet<TestCycle> TestCycles => Set<TestCycle>(); public DbSet<TestCycleItem> TestCycleItems => Set<TestCycleItem>(); public DbSet<TestRunAttempt> TestRunAttempts => Set<TestRunAttempt>(); public DbSet<TestRunEvidence> TestRunEvidenceFiles => Set<TestRunEvidence>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -163,9 +163,10 @@ public sealed class QAHubDbContext(
         history.Property(x => x.ActorId).HasMaxLength(200).IsRequired();
         history.Property(x => x.Status).HasConversion<string>().HasMaxLength(30).IsRequired();
         var build=modelBuilder.Entity<ProductBuild>();build.ToTable("ProductBuilds");build.HasKey(x=>x.Id);build.Property(x=>x.Version).HasMaxLength(100).IsRequired();build.HasIndex(x=>new{x.ProductId,x.Version}).IsUnique();build.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);
-        var cycle=modelBuilder.Entity<TestCycle>();cycle.ToTable("TestCycles");cycle.HasKey(x=>x.Id);cycle.Property(x=>x.Name).HasMaxLength(250).IsRequired();cycle.Property(x=>x.Assignee).HasMaxLength(200);cycle.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);cycle.HasOne<ProductEnvironment>().WithMany().HasForeignKey(x=>x.EnvironmentId).OnDelete(DeleteBehavior.Restrict);cycle.HasOne<ProductBuild>().WithMany().HasForeignKey(x=>x.BuildId).OnDelete(DeleteBehavior.Restrict);cycle.HasMany(x=>x.Items).WithOne().HasForeignKey(x=>x.TestCycleId).OnDelete(DeleteBehavior.Cascade);
+        var cycle=modelBuilder.Entity<TestCycle>();cycle.ToTable("TestCycles");cycle.HasKey(x=>x.Id);cycle.Property(x=>x.Name).HasMaxLength(250).IsRequired();cycle.Property(x=>x.Assignee).HasMaxLength(200);cycle.Property(x=>x.Status).HasConversion<string>().HasMaxLength(30).IsRequired();cycle.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);cycle.HasOne<ProductEnvironment>().WithMany().HasForeignKey(x=>x.EnvironmentId).OnDelete(DeleteBehavior.Restrict);cycle.HasOne<ProductBuild>().WithMany().HasForeignKey(x=>x.BuildId).OnDelete(DeleteBehavior.Restrict);cycle.HasMany(x=>x.Items).WithOne().HasForeignKey(x=>x.TestCycleId).OnDelete(DeleteBehavior.Cascade);
         var cycleItem=modelBuilder.Entity<TestCycleItem>();cycleItem.ToTable("TestCycleItems");cycleItem.HasKey(x=>x.Id);cycleItem.Property(x=>x.Assignee).HasMaxLength(200);cycleItem.HasIndex(x=>new{x.TestCycleId,x.TestCaseVersionId}).IsUnique();cycleItem.HasOne<TestCaseVersion>().WithMany().HasForeignKey(x=>x.TestCaseVersionId).OnDelete(DeleteBehavior.Restrict);cycleItem.HasMany(x=>x.Attempts).WithOne().HasForeignKey(x=>x.TestCycleItemId).OnDelete(DeleteBehavior.Cascade);
-        var attempt=modelBuilder.Entity<TestRunAttempt>();attempt.ToTable("TestRunAttempts");attempt.HasKey(x=>x.Id);attempt.Property(x=>x.Result).HasConversion<string>().HasMaxLength(20);attempt.Property(x=>x.ActualResult).HasMaxLength(4000);attempt.Property(x=>x.Evidence).HasMaxLength(2000);attempt.Property(x=>x.Reason).HasMaxLength(2000);attempt.Property(x=>x.ExecutedBy).HasMaxLength(200);attempt.HasIndex(x=>new{x.TestCycleItemId,x.AttemptNumber}).IsUnique();
+        var attempt=modelBuilder.Entity<TestRunAttempt>();attempt.ToTable("TestRunAttempts");attempt.HasKey(x=>x.Id);attempt.Property(x=>x.Result).HasConversion<string>().HasMaxLength(20);attempt.Property(x=>x.ActualResult).HasMaxLength(4000);attempt.Property(x=>x.Evidence).HasMaxLength(2000);attempt.Property(x=>x.Reason).HasMaxLength(2000);attempt.Property(x=>x.ExecutedBy).HasMaxLength(200);attempt.HasIndex(x=>new{x.TestCycleItemId,x.AttemptNumber}).IsUnique();attempt.HasMany(x=>x.EvidenceFiles).WithOne().HasForeignKey(x=>x.TestRunAttemptId).OnDelete(DeleteBehavior.Cascade);
+        var runEvidence=modelBuilder.Entity<TestRunEvidence>();runEvidence.ToTable("TestRunEvidence");runEvidence.HasKey(x=>x.Id);runEvidence.Property(x=>x.FileName).HasMaxLength(255).IsRequired();runEvidence.Property(x=>x.ContentType).HasMaxLength(200).IsRequired();runEvidence.Property(x=>x.Content).HasColumnType("varbinary(max)").IsRequired();runEvidence.Property(x=>x.UploadedBy).HasMaxLength(200).IsRequired();runEvidence.HasIndex(x=>new{x.TestRunAttemptId,x.UploadedAtUtc});
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -180,7 +181,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt;
+        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {

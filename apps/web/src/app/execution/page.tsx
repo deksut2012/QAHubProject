@@ -1,1 +1,10 @@
-import styles from"./execution.module.css";type Cycle={id:string;name:string;assignee:string;total:number;executed:number;passed:number;failed:number;blocked:number};export const dynamic="force-dynamic";export default async function ExecutionPage(){let items:Cycle[]=[];let error:string|null=null;try{const r=await fetch("http://localhost:5120/api/v1/execution/cycles",{cache:"no-store"});if(!r.ok)throw new Error();items=await r.json()as Cycle[]}catch{error="เชื่อมต่อ Execution API ไม่สำเร็จ"}return <main><header className="pageHead"><div><h1>Test Execution</h1><p>Test Cycle, Environment, Assignment, Progress และผลการทดสอบ</p></div><span className="statusPill">Phase 4 · Execution</span></header>{error&&<p className={styles.error}>{error}</p>}<div className={styles.grid}>{items.map(x=><article key={x.id}><div><h2>{x.name}</h2><strong>{x.total?Math.round(x.executed/x.total*100):0}%</strong></div><p>{x.assignee} · {x.executed}/{x.total} executed</p><div className={styles.progress}><i style={{width:`${x.total?x.executed/x.total*100:0}%`}}/></div><footer><span>Passed {x.passed}</span><span>Failed {x.failed}</span><span>Blocked {x.blocked}</span></footer></article>)}</div>{!error&&items.length===0&&<section className={styles.empty}>ยังไม่มี Test Cycle — ใช้ API `POST /api/v1/execution/cycles` เพื่อสร้าง Cycle แรก</section>}</main>}
+import {ExecutionWorkspace} from "./workspace";
+
+type Product={id:string;code:string;name:string};
+export const dynamic="force-dynamic";
+
+export default async function ExecutionPage(){
+  let products:Product[]=[];let cycles=[];let error:string|null=null;
+  try{const[p,c]=await Promise.all([fetch("http://localhost:5120/api/v1/products?pageSize=100&isActive=true",{cache:"no-store"}),fetch("http://localhost:5120/api/v1/execution/cycles",{cache:"no-store"})]);if(!p.ok||!c.ok)throw new Error();products=((await p.json())as{items:Product[]}).items;cycles=await c.json()}catch{error="เชื่อมต่อ QA Hub API ไม่สำเร็จ"}
+  return <main><header className="pageHead"><div><h1>Test Execution</h1><p>สร้าง Test Cycle มอบหมายงาน บันทึกผล และติดตามความคืบหน้า</p></div><span className="statusPill">Phase 4 · Execution</span></header><ExecutionWorkspace products={products} initialCycles={cycles} initialError={error}/></main>
+}
