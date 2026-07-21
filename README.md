@@ -28,8 +28,8 @@
 Prerequisites: .NET 10 SDK, Node.js 24, npm และ Git
 
 ```powershell
-# API
-dotnet run --project apps/api/QAHub.Api.csproj
+# API (โหลด local connection จาก .env และเปิดพอร์ต 5120)
+powershell -ExecutionPolicy Bypass -File scripts/start-api.ps1
 
 # Web
 npm.cmd --prefix apps/web run dev
