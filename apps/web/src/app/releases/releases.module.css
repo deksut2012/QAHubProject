@@ -1,0 +1,120 @@
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  color: var(--muted);
+}
+.toolbar button,
+.form > button,
+.actions button {
+  cursor: pointer;
+  border: 0;
+  border-radius: 9px;
+  background: var(--primary);
+  color: #fff;
+  padding: 9px 13px;
+}
+.error {
+  padding: 10px;
+  margin-bottom: 12px;
+  background: #fee2e2;
+  color: #b91c1c;
+  border-radius: 9px;
+}
+.form,
+.grid article {
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.form {
+  margin-bottom: 14px;
+}
+.fields {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.fields label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.fields input,
+.fields select,
+.fields textarea {
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.full {
+  grid-column: 1/-1;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+.grid header {
+  display: flex;
+  justify-content: space-between;
+}
+.grid p,
+.grid small {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+}
+.score {
+  display: block;
+  margin-top: 14px;
+}
+.progress {
+  height: 8px;
+  background: #e5e7eb;
+  border-radius: 99px;
+  overflow: hidden;
+  margin: 8px 0 14px;
+}
+.progress i {
+  display: block;
+  height: 100%;
+  background: var(--primary);
+}
+.grid li {
+  list-style: none;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.pass {
+  color: #15803d;
+}
+.fail {
+  color: #b91c1c;
+}
+.check {
+  display: block;
+  padding: 5px 0;
+  font-size: 13px;
+}
+.check input {
+  margin-right: 7px;
+}
+.actions {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+}
+@media (max-width: 850px) {
+  .grid,
+  .fields {
+    grid-template-columns: 1fr;
+  }
+  .full {
+    grid-column: auto;
+  }
+}

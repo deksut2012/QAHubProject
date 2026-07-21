@@ -8,6 +8,7 @@ using QAHub.Api.Domain.Requirements;
 using QAHub.Api.Domain.TestDesign;
 using QAHub.Api.Domain.Execution;
 using QAHub.Api.Domain.Defects;
+using QAHub.Api.Domain.Releases;
 
 namespace QAHub.Api.Infrastructure.Data;
 
@@ -32,6 +33,7 @@ public sealed class QAHubDbContext(
     public DbSet<TestCaseHistoryEntry> TestCaseHistory => Set<TestCaseHistoryEntry>();
     public DbSet<ProductBuild> ProductBuilds => Set<ProductBuild>(); public DbSet<TestCycle> TestCycles => Set<TestCycle>(); public DbSet<TestCycleItem> TestCycleItems => Set<TestCycleItem>(); public DbSet<TestRunAttempt> TestRunAttempts => Set<TestRunAttempt>(); public DbSet<TestRunEvidence> TestRunEvidenceFiles => Set<TestRunEvidence>();
     public DbSet<Bug> Bugs => Set<Bug>(); public DbSet<BugRunLink> BugRunLinks => Set<BugRunLink>(); public DbSet<BugStatusHistory> BugStatusHistories => Set<BugStatusHistory>(); public DbSet<BugComment> BugComments => Set<BugComment>(); public DbSet<BugEvidence> BugEvidenceFiles => Set<BugEvidence>(); public DbSet<BugRelation> BugRelations => Set<BugRelation>();
+    public DbSet<ReleaseCandidate> Releases => Set<ReleaseCandidate>(); public DbSet<ReleaseChecklistItem> ReleaseChecklistItems => Set<ReleaseChecklistItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -175,6 +177,8 @@ public sealed class QAHubDbContext(
         var bugComment=modelBuilder.Entity<BugComment>();bugComment.ToTable("BugComments");bugComment.HasKey(x=>x.Id);bugComment.Property(x=>x.AuthorId).HasMaxLength(200);bugComment.Property(x=>x.Body).HasMaxLength(4000);bugComment.HasIndex(x=>new{x.BugId,x.CreatedAtUtc});
         var bugEvidence=modelBuilder.Entity<BugEvidence>();bugEvidence.ToTable("BugEvidence");bugEvidence.HasKey(x=>x.Id);bugEvidence.Property(x=>x.FileName).HasMaxLength(255);bugEvidence.Property(x=>x.ContentType).HasMaxLength(200);bugEvidence.Property(x=>x.Content).HasColumnType("varbinary(max)");bugEvidence.Property(x=>x.UploadedBy).HasMaxLength(200);bugEvidence.HasIndex(x=>new{x.BugId,x.UploadedAtUtc});
         var bugRelation=modelBuilder.Entity<BugRelation>();bugRelation.ToTable("BugRelations");bugRelation.HasKey(x=>x.Id);bugRelation.Property(x=>x.CreatedBy).HasMaxLength(200);bugRelation.HasIndex(x=>new{x.BugId,x.RelatedBugId}).IsUnique();bugRelation.HasOne<Bug>().WithMany().HasForeignKey(x=>x.RelatedBugId).OnDelete(DeleteBehavior.NoAction);
+        var release=modelBuilder.Entity<ReleaseCandidate>();release.ToTable("Releases");release.HasKey(x=>x.Id);release.Property(x=>x.Name).HasMaxLength(250);release.Property(x=>x.ReleaseNotes).HasColumnType("nvarchar(max)");release.Property(x=>x.RollbackPlan).HasColumnType("nvarchar(max)");release.Property(x=>x.Status).HasConversion<string>().HasMaxLength(30);release.Property(x=>x.Decision).HasConversion<string>().HasMaxLength(30);release.Property(x=>x.SignOffBy).HasMaxLength(200);release.Property(x=>x.SignOffReason).HasMaxLength(2000);release.HasIndex(x=>new{x.ProductId,x.TargetDate});release.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);release.HasOne<ProductBuild>().WithMany().HasForeignKey(x=>x.BuildId).OnDelete(DeleteBehavior.Restrict);release.HasOne<ProductEnvironment>().WithMany().HasForeignKey(x=>x.EnvironmentId).OnDelete(DeleteBehavior.Restrict);release.HasOne<TestCycle>().WithMany().HasForeignKey(x=>x.TestCycleId).OnDelete(DeleteBehavior.Restrict);release.HasMany(x=>x.Checklist).WithOne().HasForeignKey(x=>x.ReleaseId).OnDelete(DeleteBehavior.Cascade);
+        var releaseCheck=modelBuilder.Entity<ReleaseChecklistItem>();releaseCheck.ToTable("ReleaseChecklistItems");releaseCheck.HasKey(x=>x.Id);releaseCheck.Property(x=>x.Code).HasMaxLength(50);releaseCheck.Property(x=>x.Label).HasMaxLength(250);releaseCheck.Property(x=>x.CompletedBy).HasMaxLength(200);releaseCheck.HasIndex(x=>new{x.ReleaseId,x.Code}).IsUnique();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -189,7 +193,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence or Bug or BugRunLink or BugStatusHistory or BugComment or BugEvidence or BugRelation;
+        entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence or Bug or BugRunLink or BugStatusHistory or BugComment or BugEvidence or BugRelation or ReleaseCandidate or ReleaseChecklistItem;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
@@ -214,6 +218,7 @@ public sealed class QAHubDbContext(
             ProductBuild build => build.ProductId,
             TestCycle cycle => cycle.ProductId,
             Bug bug => bug.ProductId,
+            ReleaseCandidate release => release.ProductId,
             _ => (Guid?)null,
         };
         var changes = entry.Properties
