@@ -1,0 +1,17 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using QAHub.Api.Domain.Execution;
+using QAHub.Api.Infrastructure.Data;
+using QAHub.Api.Infrastructure.Security;
+namespace QAHub.Api.Features.Execution;
+public static class ExecutionEndpoints
+{
+ public static IEndpointRouteBuilder MapExecutionEndpoints(this IEndpointRouteBuilder e){var g=e.MapGroup("/api/v1/execution").WithTags("Execution").RequireAuthorization(AuthorizationPolicies.ProductAccess);g.MapPost("/builds",CreateBuild);g.MapGet("/cycles",GetCycles);g.MapPost("/cycles",CreateCycle);g.MapGet("/cycles/{id:guid}",GetCycle);g.MapPost("/cycle-items/{id:guid}/attempts",Execute);return e;}
+ private static async Task<IResult> CreateBuild(CreateBuildRequest r,QAHubDbContext db,CancellationToken ct){var x=new ProductBuild(r.ProductId,r.Version!);db.ProductBuilds.Add(x);await db.SaveChangesAsync(ct);return Results.Created($"/api/v1/execution/builds/{x.Id}",new{x.Id,x.ProductId,x.Version});}
+ private static async Task<Ok<IReadOnlyList<CycleResponse>>> GetCycles(QAHubDbContext db,Guid? productId,CancellationToken ct){var q=db.TestCycles.AsNoTracking().Include(x=>x.Items).ThenInclude(x=>x.Attempts).AsQueryable();if(productId.HasValue)q=q.Where(x=>x.ProductId==productId);var data=await q.OrderByDescending(x=>x.CreatedAtUtc).ToListAsync(ct);return TypedResults.Ok<IReadOnlyList<CycleResponse>>(data.Select(Map).ToList());}
+ private static async Task<Created<CycleResponse>> CreateCycle(CreateCycleRequest r,QAHubDbContext db,CancellationToken ct){var x=new TestCycle(r.ProductId,r.EnvironmentId,r.BuildId,r.Name!,r.Assignee??"");foreach(var id in r.TestCaseVersionIds??[])x.Items.Add(new TestCycleItem(x.Id,id,r.Assignee??""));db.TestCycles.Add(x);await db.SaveChangesAsync(ct);return TypedResults.Created($"/api/v1/execution/cycles/{x.Id}",Map(x));}
+ private static async Task<Results<Ok<CycleResponse>,NotFound>> GetCycle(Guid id,QAHubDbContext db,CancellationToken ct){var x=await db.TestCycles.AsNoTracking().Include(x=>x.Items).ThenInclude(x=>x.Attempts).SingleOrDefaultAsync(x=>x.Id==id,ct);return x is null?TypedResults.NotFound():TypedResults.Ok(Map(x));}
+ private static async Task<Results<Ok<object>,NotFound,ValidationProblem>> Execute(Guid id,ExecuteItemRequest r,ClaimsPrincipal user,QAHubDbContext db,CancellationToken ct){var x=await db.TestCycleItems.Include(x=>x.Attempts).SingleOrDefaultAsync(x=>x.Id==id,ct);if(x is null)return TypedResults.NotFound();try{var a=new TestRunAttempt(id,x.Attempts.Count+1,r.Result,r.ActualResult??"",r.Evidence??"",r.Reason??"",user.Identity?.Name??"unknown");x.Attempts.Add(a);await db.SaveChangesAsync(ct);return TypedResults.Ok<object>(new{a.Id,a.AttemptNumber,a.Result,a.ExecutedAtUtc});}catch(ArgumentException ex){return TypedResults.ValidationProblem(new Dictionary<string,string[]>{{"result",[ex.Message]}});}}
+ private static CycleResponse Map(TestCycle x){var latest=x.Items.Select(i=>i.Attempts.OrderByDescending(a=>a.AttemptNumber).FirstOrDefault()).ToList();return new(x.Id,x.ProductId,x.EnvironmentId,x.BuildId,x.Name,x.Assignee,x.Items.Select(i=>{var a=i.Attempts.OrderByDescending(x=>x.AttemptNumber).FirstOrDefault();return new CycleItemResponse(i.Id,i.TestCaseVersionId,i.Assignee,a?.Result??ExecutionResult.NotRun,i.Attempts.Count);}).ToList(),x.Items.Count,latest.Count(a=>a is not null),latest.Count(a=>a?.Result==ExecutionResult.Passed),latest.Count(a=>a?.Result==ExecutionResult.Failed),latest.Count(a=>a?.Result==ExecutionResult.Blocked));}
+}
