@@ -17,9 +17,8 @@
 
 ## งานถัดไป
 
-- Product filter และ drill-down
-- Bug aging/SLA trend และ Requirement status visualization
-- Release readiness detail และ scheduled report contract
+- Requirement status visualization
+- Scheduled report contract
 - Transaction reconciliation/integration tests ครบ exit gate
 
 ## ผลตรวจล่าสุด
