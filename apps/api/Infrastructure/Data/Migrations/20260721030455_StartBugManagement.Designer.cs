@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QAHub.Api.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using QAHub.Api.Infrastructure.Data;
 namespace QAHub.Api.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(QAHubDbContext))]
-    partial class QAHubDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721030455_StartBugManagement")]
+    partial class StartBugManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

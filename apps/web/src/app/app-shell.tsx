@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const sections = [
   { title: "Overview", items: [{ href: "/", icon: "▦", label: "Dashboard" }, { href: "/products", icon: "◈", label: "Products" }] },
-  { title: "Test Management", items: [{ href: "/requirements", icon: "≡", label: "Requirements" }, { href: "/test-cases", icon: "✓", label: "Test Cases" }, { href: "/execution", icon: "▶", label: "Test Execution" }, { href: "#", icon: "●", label: "Bugs", disabled: true }] },
+  { title: "Test Management", items: [{ href: "/requirements", icon: "≡", label: "Requirements" }, { href: "/test-cases", icon: "✓", label: "Test Cases" }, { href: "/execution", icon: "▶", label: "Test Execution" }, { href: "/bugs", icon: "🐞", label: "Bugs" }] },
   { title: "Administration", items: [{ href: "/audit", icon: "◷", label: "Audit History" }, { href: "/admin", icon: "♙", label: "Users & Roles" }] },
 ] as const;
 

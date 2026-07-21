@@ -6,6 +6,7 @@ using QAHub.Api.Features.TestDesign;
 using QAHub.Api.Features.Execution;
 using QAHub.Api.Features.Administration;
 using QAHub.Api.Features.Auditing;
+using QAHub.Api.Features.Defects;
 using QAHub.Api.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -98,6 +99,7 @@ app.MapProductEnvironmentEndpoints();
 app.MapRequirementEndpoints();
 app.MapTestCaseEndpoints();
 app.MapExecutionEndpoints();
+app.MapBugEndpoints();
 app.MapAdministrationEndpoints();
 app.MapAuditEndpoints();
 
