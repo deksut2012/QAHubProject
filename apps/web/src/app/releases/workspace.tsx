@@ -5,6 +5,8 @@ type Product = { id: string; code: string; name: string };
 type Env = { id: string; code: string; name: string };
 type Build = { id: string; version: string };
 type Cycle = { id: string; name: string; buildId?: string; status: string };
+type Requirement = { id: string; jobNumber: string; title: string; status: string };
+type Bug = { id: string; code: string; title: string; severity: string; status: string };
 type Gate = {
   code: string;
   label: string;
@@ -28,6 +30,7 @@ type Release = {
   canApprove: boolean;
   gates: Gate[];
   checklist: Check[];
+  deploymentStatus: string;
 };
 export function ReleaseWorkspace({
   products,
@@ -45,6 +48,10 @@ export function ReleaseWorkspace({
     [envs, setEnvs] = useState<Env[]>([]),
     [builds, setBuilds] = useState<Build[]>([]),
     [cycles, setCycles] = useState<Cycle[]>([]),
+    [requirements, setRequirements] = useState<Requirement[]>([]),
+    [bugs, setBugs] = useState<Bug[]>([]),
+    [requirementIds, setRequirementIds] = useState<string[]>([]),
+    [knownIssueBugIds, setKnownIssueBugIds] = useState<string[]>([]),
     [environmentId, setEnvironmentId] = useState(""),
     [buildId, setBuildId] = useState(""),
     [testCycleId, setTestCycleId] = useState(""),
@@ -58,12 +65,18 @@ export function ReleaseWorkspace({
       fetch(`/backend/v1/products/${productId}/environments`),
       fetch(`/backend/v1/execution/builds?productId=${productId}`),
       fetch(`/backend/v1/execution/cycles?productId=${productId}`),
+      fetch(`/backend/v1/requirements?productId=${productId}&pageSize=100`),
+      fetch(`/backend/v1/bugs?productId=${productId}`),
     ])
       .then(async (rs) => {
-        const [e, b, c] = await Promise.all(rs.map((r) => r.json()));
+        const [e, b, c, requirementPage, productBugs] = await Promise.all(rs.map((r) => r.json()));
         setEnvs(e);
         setBuilds(b);
         setCycles(c);
+        setRequirements(requirementPage.items);
+        setBugs(productBugs);
+        setRequirementIds([]);
+        setKnownIssueBugIds([]);
         setEnvironmentId(e[0]?.id ?? "");
         setBuildId(b[0]?.id ?? "");
       })
@@ -83,6 +96,9 @@ export function ReleaseWorkspace({
         targetDate,
         releaseNotes,
         rollbackPlan,
+        requirementIds,
+        knownIssueBugIds,
+        knownIssueMitigation: "Documented in release sign-off",
       }),
     });
     if (!r.ok) {
@@ -218,6 +234,8 @@ export function ReleaseWorkspace({
                 onChange={(e) => setRollbackPlan(e.target.value)}
               />
             </label>
+            <fieldset className={styles.full}><legend>Release requirement scope</legend>{requirements.map(x=><label key={x.id}><input type="checkbox" checked={requirementIds.includes(x.id)} onChange={e=>setRequirementIds(v=>e.target.checked?[...v,x.id]:v.filter(id=>id!==x.id))}/>{x.jobNumber} · {x.title} ({x.status})</label>)}</fieldset>
+            <fieldset className={styles.full}><legend>Known issues</legend>{bugs.filter(x=>!["Closed","Rejected","Duplicate","CannotReproduce"].includes(x.status)).map(x=><label key={x.id}><input type="checkbox" checked={knownIssueBugIds.includes(x.id)} onChange={e=>setKnownIssueBugIds(v=>e.target.checked?[...v,x.id]:v.filter(id=>id!==x.id))}/>{x.code} · {x.title} ({x.severity})</label>)}</fieldset>
           </div>
           <button>Create Release</button>
         </form>
@@ -302,6 +320,8 @@ export function ReleaseWorkspace({
                   </button>
                 </>
               )}
+              {["Approved","Conditional"].includes(x.status)&&<button onClick={()=>action(x.id,"deployment",{status:"Deployed",notes:"Deployment completed",postReleaseValidated:true})}>Mark deployed</button>}
+              <a href={`/backend/v1/releases/${x.id}/report`}>Export report</a>
             </div>
           </article>
         ))}

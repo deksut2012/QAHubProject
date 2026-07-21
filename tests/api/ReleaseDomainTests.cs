@@ -7,4 +7,6 @@ public sealed class ReleaseDomainTests
  [Fact]public void ApprovedSignOffIsBlockedWhenCriticalGateFails(){var x=NewRelease();x.MarkCandidate();Assert.Throws<InvalidOperationException>(()=>x.SignOff(SignOffDecision.Approved,"lead","",false));}
  [Fact]public void ConditionalSignOffRequiresReason(){var x=NewRelease();x.MarkCandidate();Assert.Throws<InvalidOperationException>(()=>x.SignOff(SignOffDecision.Conditional,"lead","",false));}
  [Fact]public void ApprovedSignOffSucceedsWhenCriticalGatesPass(){var x=NewRelease();x.MarkCandidate();x.SignOff(SignOffDecision.Approved,"lead","",true);Assert.Equal(ReleaseStatus.Approved,x.Status);Assert.NotNull(x.SignedOffAtUtc);}
+ [Fact]public void DeploymentRequiresPostReleaseValidation(){var x=NewRelease();x.MarkCandidate();x.SignOff(SignOffDecision.Approved,"lead","",true);Assert.Throws<InvalidOperationException>(()=>x.RecordDeployment(DeploymentStatus.Deployed,"done",false,"qa"));}
+ [Fact]public void ValidatedDeploymentMarksReleaseReleased(){var x=NewRelease();x.MarkCandidate();x.SignOff(SignOffDecision.Approved,"lead","",true);x.RecordDeployment(DeploymentStatus.Deployed,"done",true,"qa");Assert.Equal(ReleaseStatus.Released,x.Status);Assert.True(x.PostReleaseValidated);}
 }

@@ -4,6 +4,7 @@ using QAHub.Api.Domain.Requirements;
 using QAHub.Api.Domain.TestDesign;
 using QAHub.Api.Domain.Execution;
 using QAHub.Api.Domain.Defects;
+using QAHub.Api.Domain.Releases;
 using QAHub.Api.Infrastructure.Data;
 
 namespace QAHub.Api.Tests;
@@ -64,5 +65,12 @@ public sealed class DatabaseIntegrationTests
         Assert.True(await db.Bugs.AnyAsync(x=>x.Id==bug.Id&&x.Status==BugStatus.Closed&&x.FixBuildId==build.Id&&x.VerificationAttemptId==passed.Id));
         Assert.True(await db.BugRunLinks.AnyAsync(x=>x.BugId==bug.Id&&x.TestRunAttemptId==failed.Id));
         Assert.Equal(7, await db.BugStatusHistories.CountAsync(x=>x.BugId==bug.Id));
+
+        requirement.TransitionTo(RequirementStatus.InReview); requirement.TransitionTo(RequirementStatus.Approved); requirement.TransitionTo(RequirementStatus.Implemented); requirement.TransitionTo(RequirementStatus.Verified); cycle.Complete();
+        var release = new ReleaseCandidate(product.Id, build.Id, environment.Id, cycle.Id, "Integration release", DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)), "Release notes", "Rollback plan");
+        release.Requirements.Add(new ReleaseRequirement(release.Id, requirement.Id)); foreach(var check in release.Checklist)check.SetCompleted(true,"qa-user"); release.MarkCandidate(); release.SignOff(SignOffDecision.Approved,"qa-lead","",true); release.RecordDeployment(DeploymentStatus.Deployed,"deployed",true,"qa-user");
+        db.Releases.Add(release); await db.SaveChangesAsync();
+        Assert.True(await db.Releases.AnyAsync(x=>x.Id==release.Id&&x.Status==ReleaseStatus.Released&&x.PostReleaseValidated));
+        Assert.True(await db.ReleaseRequirements.AnyAsync(x=>x.ReleaseId==release.Id&&x.RequirementId==requirement.Id));
     }
 }

@@ -1,0 +1,2 @@
+namespace QAHub.Api.Domain.Releases;
+public sealed class ReleaseKnownIssue{private ReleaseKnownIssue(){}public ReleaseKnownIssue(Guid releaseId,Guid bugId,string mitigation){Id=Guid.NewGuid();ReleaseId=releaseId;BugId=bugId;Mitigation=mitigation.Trim();}public Guid Id{get;private set;}public Guid ReleaseId{get;private set;}public Guid BugId{get;private set;}public string Mitigation{get;private set;}=string.Empty;}

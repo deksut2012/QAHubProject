@@ -1,37 +1,43 @@
 # Phase 6 — Build, Release & Quality Gate
 
-สถานะ: **In progress**
+สถานะ: **Complete (conditional)**
 
-## Vertical slice แรก
+## สิ่งที่ส่งมอบ
 
 - Release Candidate ผูก Product, Build, Environment และ Test Cycle
-- Release notes, rollback plan และ target release date
-- Release checklist พร้อม actor/timestamp
-- Quality Gate อ่านข้อมูลจริงจาก Test Cycle และ Critical Bugs
-- Readiness score จาก critical gates 5 รายการ
+- Requirement release scope แบบ pinned และ Known Issues ที่อ้าง Bug จริง
+- Release notes, rollback plan, target release date และ checklist พร้อม actor/timestamp
+- Readiness score และ Quality Gate จาก transaction จริง
 - Draft → Candidate → Approved, Conditional หรือ Rejected
-- Approved sign-off ถูกบล็อกเมื่อ critical gate ไม่ผ่าน พร้อมแสดงเหตุผล
-- Conditional sign-off บังคับระบุเหตุผล
+- Approved sign-off ถูกบล็อกพร้อมเหตุผลเมื่อ Critical Gate ไม่ผ่าน
+- Conditional sign-off บังคับเหตุผล
+- Deployment status และ post-release validation ก่อนเปลี่ยนเป็น Released
+- CSV Release Report รวม gate, checklist, sign-off และ deployment
+- Audit ครอบคลุม Release, checklist, requirement scope และ known issues
 - หน้า Build & Release ตาม `QA_Hub_UI_Prototype.html`
-- Migration `StartReleaseQualityGate`
+- Migrations: `StartReleaseQualityGate`, `CompleteReleaseQualityGate`
 
-## Quality Gates ปัจจุบัน
+## Critical Quality Gates
 
 - ไม่มี Critical Bug ที่ยังเปิดอยู่
 - Test Cycle อยู่สถานะ Completed
 - ผลล่าสุดไม่มี Failed หรือ Blocked
+- Requirement ใน release scope เป็น Verified หรือ Closed ครบ
 - Required checklist ครบ
 - Release notes และ rollback plan พร้อม
 
-## งานถัดไป
+## Exit gate
 
-- Requirement coverage และ release scope แบบ pinned
-- Known issues, deployment status และ post-release validation
-- Release report/export และ sign-off audit detail
-- Integration tests ให้ครบ MVP Feature Gate
+ระบบบล็อก Approved sign-off เมื่อ Critical Gate ไม่ผ่านและตอบกลับเหตุผลราย gate โดย integration scenario ครอบคลุม Requirement → Test → Bug/Fix → Release → Sign-off → Deployment
 
 ## ผลตรวจล่าสุด
 
 - .NET build ผ่านโดยไม่มี warning/error
-- Automated tests ผ่าน 59 รายการ
+- Automated tests ผ่าน 61 รายการ
 - ESLint และ Next.js production build ผ่าน
+
+## เงื่อนไขก่อน Production
+
+- ยืนยันสูตร readiness/exception authority กับ QA Lead และ Release Manager
+- รัน database integration suite ใน CI ด้วย `QAHUB_TEST_CONNECTION`
+- ทำ UAT sign-off และทดสอบ rollback/post-release checklist กับ Pilot Product
