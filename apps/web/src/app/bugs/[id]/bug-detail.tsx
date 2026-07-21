@@ -21,6 +21,7 @@ type Comment = {
   createdAtUtc: string;
 };
 type Evidence = { id: string; fileName: string; sizeBytes: number };
+type Relation = { id: string; relatedBugId: string; createdBy: string };
 type Bug = {
   id: string;
   code: string;
@@ -41,6 +42,7 @@ type Bug = {
   history: History[];
   comments: Comment[];
   evidenceFiles: Evidence[];
+  relatedBugs: Relation[];
 };
 const next: Record<string, string[]> = {
   New: ["Triaged", "Rejected", "Duplicate", "CannotReproduce", "Deferred"],
@@ -76,6 +78,7 @@ export function BugDetail({
       initialBug.verificationAttemptId ?? "",
     ),
     [comment, setComment] = useState(""),
+    [relatedBugId, setRelatedBugId] = useState(""),
     [file, setFile] = useState<File | null>(null),
     [error, setError] = useState<string | null>(null);
   const passed = useMemo(
@@ -156,6 +159,7 @@ export function BugDetail({
       refresh();
     } else setError("แนบหลักฐานไม่สำเร็จ");
   }
+  async function addRelation(){if(!relatedBugId)return;const r=await fetch(`/backend/v1/bugs/${bug.id}/relations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({relatedBugId})});if(r.ok){setRelatedBugId("");refresh()}else setError((await r.json().catch(()=>null))?.message??"เชื่อม Related Bug ไม่สำเร็จ")}
   return (
     <>
       {error && <p className={styles.error}>{error}</p>}
@@ -305,6 +309,10 @@ export function BugDetail({
           <button type="button" onClick={upload}>
             Upload evidence
           </button>
+          <h2>Related bugs</h2>
+          {bug.relatedBugs.map((x)=><p key={x.id}><a href={`/bugs/${x.relatedBugId}`}>{bugs.find(b=>b.id===x.relatedBugId)?.code??x.relatedBugId} {bugs.find(b=>b.id===x.relatedBugId)?.title}</a></p>)}
+          <select value={relatedBugId} onChange={(e)=>setRelatedBugId(e.target.value)}><option value="">Select related bug</option>{bugs.filter(x=>x.id!==bug.id&&!bug.relatedBugs.some(r=>r.relatedBugId===x.id)).map(x=><option key={x.id} value={x.id}>{x.code} {x.title}</option>)}</select>
+          <button type="button" onClick={addRelation}>Add relation</button>
           <h2>History</h2>
           {bug.history.map((x, i) => (
             <p key={i}>

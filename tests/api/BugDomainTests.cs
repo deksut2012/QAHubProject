@@ -11,4 +11,5 @@ public sealed class BugDomainTests
  [Fact]public void VerifiedRequiresPassedRetestReference(){var bug=NewBug();bug.TransitionTo(BugStatus.Triaged,"lead","");bug.Assign("dev");bug.TransitionTo(BugStatus.Assigned,"lead","");bug.TransitionTo(BugStatus.InProgress,"dev","");bug.TransitionTo(BugStatus.Fixed,"dev","",Guid.NewGuid());bug.TransitionTo(BugStatus.ReadyForRetest,"dev","");Assert.Throws<InvalidOperationException>(()=>bug.TransitionTo(BugStatus.Verified,"qa",""));}
  [Fact]public void CommentRequiresBody()=>Assert.Throws<ArgumentException>(()=>new BugComment(Guid.NewGuid(),"qa",""));
  [Fact]public void EvidenceRejectsFilesOverTenMegabytes()=>Assert.Throws<ArgumentException>(()=>new BugEvidence(Guid.NewGuid(),"large.bin","application/octet-stream",new byte[10*1024*1024+1],"qa"));
+ [Fact]public void RelatedBugCannotReferenceItself(){var id=Guid.NewGuid();Assert.Throws<ArgumentException>(()=>new BugRelation(id,id,"qa"));}
 }

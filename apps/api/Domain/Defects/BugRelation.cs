@@ -1,0 +1,2 @@
+namespace QAHub.Api.Domain.Defects;
+public sealed class BugRelation{private BugRelation(){}public BugRelation(Guid bugId,Guid relatedBugId,string actor){if(bugId==relatedBugId)throw new ArgumentException("A bug cannot relate to itself.");Id=Guid.NewGuid();BugId=bugId;RelatedBugId=relatedBugId;CreatedBy=actor.Trim();CreatedAtUtc=DateTimeOffset.UtcNow;}public Guid Id{get;private set;}public Guid BugId{get;private set;}public Guid RelatedBugId{get;private set;}public string CreatedBy{get;private set;}=string.Empty;public DateTimeOffset CreatedAtUtc{get;private set;}}

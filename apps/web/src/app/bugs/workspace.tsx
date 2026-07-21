@@ -19,6 +19,8 @@ type Bug = {
   status: string;
   assignee: string;
   agingDays: number;
+  slaDays: number;
+  isSlaBreached: boolean;
 };
 const columns = [
   { name: "New", statuses: ["New", "Triaged"] },
@@ -59,7 +61,9 @@ export function BugWorkspace({
     [priority, setPriority] = useState("High"),
     [assignee, setAssignee] = useState(""),
     [attemptIds, setAttemptIds] = useState<string[]>([]),
-    [saving, setSaving] = useState(false);
+    [saving, setSaving] = useState(false),
+    [slaOnly, setSlaOnly] = useState(false);
+  const visibleBugs = slaOnly ? bugs.filter((x) => x.isSlaBreached) : bugs;
   const failures = useMemo(
     () =>
       cycles
@@ -111,8 +115,8 @@ export function BugWorkspace({
     <>
       {error && <p className={styles.error}>{error}</p>}
       <div className={styles.toolbar}>
-        <span>{bugs.length} bugs</span>
-        <button onClick={() => setOpen((v) => !v)}>+ New Bug</button>
+        <span>{visibleBugs.length} bugs</span>
+        <div><label><input type="checkbox" checked={slaOnly} onChange={(e)=>setSlaOnly(e.target.checked)}/> SLA breached only</label> <a href="/backend/v1/bugs/report">Export CSV</a> <button onClick={() => setOpen((v) => !v)}>+ New Bug</button></div>
       </div>
       {open && (
         <form className={styles.form} onSubmit={submit}>
@@ -234,10 +238,10 @@ export function BugWorkspace({
             <h2>
               {col.name}{" "}
               <small>
-                {bugs.filter((x) => col.statuses.includes(x.status)).length}
+                {visibleBugs.filter((x) => col.statuses.includes(x.status)).length}
               </small>
             </h2>
-            {bugs
+            {visibleBugs
               .filter((x) => col.statuses.includes(x.status))
               .map((x) => (
                 <article key={x.id}>
@@ -252,6 +256,7 @@ export function BugWorkspace({
                     {x.severity} · {x.priority}
                   </span>
                   <em>{x.status}</em>
+                  <em>{x.isSlaBreached ? `SLA breached (${x.agingDays}/${x.slaDays}d)` : `SLA ${x.agingDays}/${x.slaDays}d`}</em>
                 </article>
               ))}
           </section>

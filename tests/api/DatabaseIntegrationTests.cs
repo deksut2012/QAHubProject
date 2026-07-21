@@ -2,6 +2,8 @@ using Microsoft.EntityFrameworkCore;
 using QAHub.Api.Domain.Products;
 using QAHub.Api.Domain.Requirements;
 using QAHub.Api.Domain.TestDesign;
+using QAHub.Api.Domain.Execution;
+using QAHub.Api.Domain.Defects;
 using QAHub.Api.Infrastructure.Data;
 
 namespace QAHub.Api.Tests;
@@ -45,5 +47,22 @@ public sealed class DatabaseIntegrationTests
 
         Assert.True(await db.TestCases.AnyAsync(x => x.Id == testCase.Id));
         Assert.True(await db.TestCaseSteps.AnyAsync(x => x.TestCaseVersionId == version.Id));
+
+        var environment = new ProductEnvironment(product.Id, $"E{Guid.NewGuid():N}"[..10], "Integration");
+        var build = new ProductBuild(product.Id, $"IT-{Guid.NewGuid():N}"[..15]);
+        db.ProductEnvironments.Add(environment); db.ProductBuilds.Add(build);
+        var cycle = new TestCycle(product.Id, environment.Id, build.Id, "Integration cycle", "qa-user");
+        var item = new TestCycleItem(cycle.Id, version.Id, "qa-user"); cycle.Items.Add(item); cycle.Start();
+        var failed = new TestRunAttempt(item.Id, 1, ExecutionResult.Failed, "500", "log", "unexpected", "qa-user");
+        var passed = new TestRunAttempt(item.Id, 2, ExecutionResult.Passed, "fixed", "", "", "qa-user");
+        item.Attempts.Add(failed); item.Attempts.Add(passed); db.TestCycles.Add(cycle);
+        var bug = new Bug(product.Id, $"BUG-{Guid.NewGuid():N}"[..16], "Integration defect", "", "Reproduce", "Works", "Failed", BugSeverity.High, BugPriority.High, "qa-user");
+        bug.RunLinks.Add(new BugRunLink(bug.Id, failed.Id)); bug.Assign("developer");
+        bug.TransitionTo(BugStatus.Triaged, "lead", "triaged"); bug.TransitionTo(BugStatus.Assigned, "lead", "assigned"); bug.TransitionTo(BugStatus.InProgress, "developer", "working"); bug.TransitionTo(BugStatus.Fixed, "developer", "fixed", build.Id); bug.TransitionTo(BugStatus.ReadyForRetest, "developer", "ready"); bug.TransitionTo(BugStatus.Verified, "qa-user", "passed", verificationAttemptId: passed.Id); bug.TransitionTo(BugStatus.Closed, "lead", "verified");
+        bug.Comments.Add(new BugComment(bug.Id, "qa-user", "Integration comment")); bug.EvidenceFiles.Add(new BugEvidence(bug.Id, "result.txt", "text/plain", "passed"u8.ToArray(), "qa-user"));
+        db.Bugs.Add(bug); await db.SaveChangesAsync();
+        Assert.True(await db.Bugs.AnyAsync(x=>x.Id==bug.Id&&x.Status==BugStatus.Closed&&x.FixBuildId==build.Id&&x.VerificationAttemptId==passed.Id));
+        Assert.True(await db.BugRunLinks.AnyAsync(x=>x.BugId==bug.Id&&x.TestRunAttemptId==failed.Id));
+        Assert.Equal(7, await db.BugStatusHistories.CountAsync(x=>x.BugId==bug.Id));
     }
 }
