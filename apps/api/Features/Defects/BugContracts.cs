@@ -1,6 +1,10 @@
 using QAHub.Api.Domain.Defects;
 namespace QAHub.Api.Features.Defects;
 public sealed record CreateBugRequest(Guid ProductId,string? Code,string? Title,string? Description,string? StepsToReproduce,string? ExpectedResult,string? ActualResult,BugSeverity Severity,BugPriority Priority,string? Assignee,IReadOnlyList<Guid>? TestRunAttemptIds);
-public sealed record TransitionBugRequest(BugStatus Status,string? Reason,string? Assignee,Guid? FixBuildId,Guid? CanonicalBugId);
+public sealed record TransitionBugRequest(BugStatus Status,string? Reason,string? Assignee,Guid? FixBuildId,Guid? CanonicalBugId,Guid? VerificationAttemptId);
+public sealed record CreateBugCommentRequest(string? Body);
+public sealed record CreateBugEvidenceRequest(string? FileName,string? ContentType,string? ContentBase64);
+public sealed record BugCommentResponse(Guid Id,string AuthorId,string Body,DateTimeOffset CreatedAtUtc);
+public sealed record BugEvidenceResponse(Guid Id,string FileName,string ContentType,long SizeBytes,string UploadedBy,DateTimeOffset UploadedAtUtc);
 public sealed record BugHistoryResponse(BugStatus FromStatus,BugStatus ToStatus,string ActorId,string Reason,DateTimeOffset ChangedAtUtc);
-public sealed record BugResponse(Guid Id,Guid ProductId,string Code,string Title,string Description,string StepsToReproduce,string ExpectedResult,string ActualResult,BugSeverity Severity,BugPriority Priority,BugStatus Status,string Reporter,string Assignee,Guid? FixBuildId,Guid? CanonicalBugId,DateTimeOffset CreatedAtUtc,DateTimeOffset UpdatedAtUtc,int AgingDays,IReadOnlyList<Guid> TestRunAttemptIds,IReadOnlyList<BugHistoryResponse> History);
+public sealed record BugResponse(Guid Id,Guid ProductId,string Code,string Title,string Description,string StepsToReproduce,string ExpectedResult,string ActualResult,BugSeverity Severity,BugPriority Priority,BugStatus Status,string Reporter,string Assignee,Guid? FixBuildId,Guid? CanonicalBugId,Guid? VerificationAttemptId,DateTimeOffset CreatedAtUtc,DateTimeOffset UpdatedAtUtc,int AgingDays,IReadOnlyList<Guid> TestRunAttemptIds,IReadOnlyList<BugHistoryResponse> History,IReadOnlyList<BugCommentResponse> Comments,IReadOnlyList<BugEvidenceResponse> EvidenceFiles);

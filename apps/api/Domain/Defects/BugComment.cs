@@ -1,0 +1,2 @@
+namespace QAHub.Api.Domain.Defects;
+public sealed class BugComment{private BugComment(){}public BugComment(Guid bugId,string author,string body){ArgumentException.ThrowIfNullOrWhiteSpace(body);Id=Guid.NewGuid();BugId=bugId;AuthorId=author.Trim();Body=body.Trim();CreatedAtUtc=DateTimeOffset.UtcNow;}public Guid Id{get;private set;}public Guid BugId{get;private set;}public string AuthorId{get;private set;}=string.Empty;public string Body{get;private set;}=string.Empty;public DateTimeOffset CreatedAtUtc{get;private set;}}

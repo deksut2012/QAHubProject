@@ -15,15 +15,18 @@
 - หน้า Bug Kanban และฟอร์มสร้าง Bug ตาม `QA_Hub_UI_Prototype.html`
 - Migration `StartBugManagement`
 
+## Vertical slice ที่สอง
+
+- หน้ารายละเอียด Bug และ workflow controls พร้อม Fix Build/Canonical Bug
+- Retest verification ที่บังคับอ้าง Passed execution attempt ใน Product เดียวกัน
+- Comments และ evidence attachment สูงสุด 10 MB
+
 ## งานถัดไป
 
-- หน้ารายละเอียด Bug และ workflow controls ตามสิทธิ์
-- Retest flow ที่สร้าง/เชื่อม execution attempt และปิด Bug จากผล verification
-- Related Bug, comments และ evidence attachment
-- Aging SLA/filter/report และ integration tests ครบ exit gate
+- Related Bug, Aging SLA/filter/report และ integration tests ครบ exit gate
 
 ## ผลตรวจล่าสุด
 
 - .NET build ผ่านโดยไม่มี warning/error
-- Automated tests ผ่าน 51 รายการ
+- Automated tests ผ่าน 54 รายการ
 - ESLint และ Next.js production build ผ่าน
