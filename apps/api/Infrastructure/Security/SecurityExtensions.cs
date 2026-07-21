@@ -37,7 +37,9 @@ public static class SecurityExtensions
             .AddPolicy(AuthorizationPolicies.Administration, policy =>
                 policy.RequireRole("SystemAdmin"))
             .AddPolicy(AuthorizationPolicies.AuditRead, policy =>
-                policy.RequireRole("SystemAdmin", "QALead", "Auditor"));
+                policy.RequireRole("SystemAdmin", "QALead", "Auditor"))
+            .AddPolicy(AuthorizationPolicies.ToolboxUse, policy =>
+                policy.RequireRole("SystemAdmin", "QALead", "QAEngineer", "Developer"));
         return services;
     }
 }
