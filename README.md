@@ -4,7 +4,7 @@
 
 ## สถานะโครงการ
 
-- Phase ปัจจุบัน: **Phase 8 — QA Toolbox in progress**
+- Phase ปัจจุบัน: **Phase 9 — Integration in progress** (Phase 8 advanced tools ยังมี backlog)
 - Phase 0 gate: **Conditional GO** สำหรับ technical foundation; business workflow/owner approvals ยังต้องปิดก่อนเริ่ม module จริง
 - เป้าหมาย Phase 0: ทำให้ Project Charter, MVP Scope, Initial Backlog, Architecture Direction และ Owner พร้อมขออนุมัติ
 - เอกสารทำงาน: [docs/phase-0/README.md](docs/phase-0/README.md)
