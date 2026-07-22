@@ -40,6 +40,8 @@ public sealed class QAHubDbContext(
     public DbSet<ScheduledReport> ScheduledReports => Set<ScheduledReport>();
     public DbSet<SavedSqlQuery> SavedSqlQueries => Set<SavedSqlQuery>();
     public DbSet<AutomationRun> AutomationRuns => Set<AutomationRun>();
+    public DbSet<IntegrationConnection> IntegrationConnections => Set<IntegrationConnection>();
+    public DbSet<IntegrationError> IntegrationErrors => Set<IntegrationError>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -190,6 +192,8 @@ public sealed class QAHubDbContext(
         var scheduledReport=modelBuilder.Entity<ScheduledReport>();scheduledReport.ToTable("ScheduledReports");scheduledReport.HasKey(x=>x.Id);scheduledReport.Property(x=>x.Name).HasMaxLength(200).IsRequired();scheduledReport.Property(x=>x.Frequency).HasConversion<string>().HasMaxLength(20).IsRequired();scheduledReport.Property(x=>x.Recipients).HasMaxLength(2000).IsRequired();scheduledReport.HasIndex(x=>new{x.IsEnabled,x.NextRunAtUtc});scheduledReport.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);
         var savedQuery=modelBuilder.Entity<SavedSqlQuery>();savedQuery.ToTable("SavedSqlQueries");savedQuery.HasKey(x=>x.Id);savedQuery.Property(x=>x.Name).HasMaxLength(200).IsRequired();savedQuery.Property(x=>x.Statement).HasMaxLength(8000).IsRequired();savedQuery.Property(x=>x.CreatedBy).HasMaxLength(200).IsRequired();savedQuery.HasIndex(x=>new{x.ProductId,x.Name});savedQuery.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);
         var automationRun=modelBuilder.Entity<AutomationRun>();automationRun.ToTable("AutomationRuns");automationRun.HasKey(x=>x.Id);automationRun.Property(x=>x.Provider).HasMaxLength(50).IsRequired();automationRun.Property(x=>x.ExternalRunId).HasMaxLength(200).IsRequired();automationRun.Property(x=>x.Branch).HasMaxLength(250);automationRun.Property(x=>x.CommitSha).HasMaxLength(100);automationRun.Property(x=>x.Status).HasMaxLength(30).IsRequired();automationRun.Property(x=>x.Owner).HasMaxLength(200).IsRequired();automationRun.Property(x=>x.Fingerprint).HasMaxLength(64).IsRequired();automationRun.HasIndex(x=>new{x.Provider,x.ExternalRunId}).IsUnique();automationRun.HasIndex(x=>new{x.ProductId,x.ReceivedAtUtc});automationRun.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);
+        var integrationConnection=modelBuilder.Entity<IntegrationConnection>();integrationConnection.ToTable("IntegrationConnections");integrationConnection.HasKey(x=>x.Id);integrationConnection.Property(x=>x.Name).HasMaxLength(200).IsRequired();integrationConnection.Property(x=>x.Provider).HasMaxLength(50).IsRequired();integrationConnection.Property(x=>x.Endpoint).HasMaxLength(2000);integrationConnection.Property(x=>x.SecretReference).HasMaxLength(500);integrationConnection.Property(x=>x.Owner).HasMaxLength(200).IsRequired();integrationConnection.HasIndex(x=>new{x.ProductId,x.Provider,x.Name});integrationConnection.HasOne<Product>().WithMany().HasForeignKey(x=>x.ProductId).OnDelete(DeleteBehavior.Restrict);
+        var integrationError=modelBuilder.Entity<IntegrationError>();integrationError.ToTable("IntegrationErrors");integrationError.HasKey(x=>x.Id);integrationError.Property(x=>x.Operation).HasMaxLength(100).IsRequired();integrationError.Property(x=>x.ExternalReference).HasMaxLength(300);integrationError.Property(x=>x.Code).HasMaxLength(100).IsRequired();integrationError.Property(x=>x.Message).HasMaxLength(1000).IsRequired();integrationError.Property(x=>x.Owner).HasMaxLength(200).IsRequired();integrationError.HasIndex(x=>new{x.IsResolved,x.NextRetryAtUtc});integrationError.HasOne<IntegrationConnection>().WithMany().HasForeignKey(x=>x.ConnectionId).OnDelete(DeleteBehavior.Restrict);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -204,7 +208,7 @@ public sealed class QAHubDbContext(
 
     private static bool IsAuditableChange(EntityEntry entry) =>
         entry.State is EntityState.Added or EntityState.Modified &&
-            entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence or Bug or BugRunLink or BugStatusHistory or BugComment or BugEvidence or BugRelation or ReleaseCandidate or ReleaseChecklistItem or ReleaseRequirement or ReleaseKnownIssue or ScheduledReport or SavedSqlQuery or AutomationRun;
+            entry.Entity is Product or ProductModule or ProductEnvironment or UserAccount or AppRole or UserRole or Requirement or RequirementComment or RequirementAttachment or TestCase or TestCaseVersion or TestCaseStep or TestCaseComment or ProductBuild or TestCycle or TestCycleItem or TestRunAttempt or TestRunEvidence or Bug or BugRunLink or BugStatusHistory or BugComment or BugEvidence or BugRelation or ReleaseCandidate or ReleaseChecklistItem or ReleaseRequirement or ReleaseKnownIssue or ScheduledReport or SavedSqlQuery or AutomationRun or IntegrationConnection or IntegrationError;
 
     private AuditEvent CreateAuditEvent(EntityEntry entry)
     {
@@ -233,6 +237,7 @@ public sealed class QAHubDbContext(
             ScheduledReport report => report.ProductId,
             SavedSqlQuery query => query.ProductId,
             AutomationRun run => run.ProductId,
+            IntegrationConnection connection => connection.ProductId,
             _ => (Guid?)null,
         };
         var changes = entry.Properties
